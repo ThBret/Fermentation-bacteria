@@ -16,7 +16,7 @@ The scripts used as part of this project are here described in order:
 ~~~
 - Runs a **CheckM** quality assessment check on all the whole-genome sequences uploaded to the online server.
 - Returns text files for every bacteria species giving a quality evaluation of each given genome, the text files are saved in a directory named "output".
-
+~~~
 
 ## qa_filtering.py [Local; after importing the "output" directory locally]
 ~~~
