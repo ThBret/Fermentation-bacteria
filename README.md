@@ -43,3 +43,40 @@ The scripts used as part of this project are here described in order:
 - Correspondingly moves the genome sequence files in the "Acetic" folder or the "Lactic" folder. 
 - That way, lactic and acetic bacteria can be treated separately for later steps of the analysis.
 ~~~
+
+
+## first_tree.py
+**Local**: *Used after separating the acetic bacteria from the lactic bacteria and filtering out contaminated and incomplete genomes.*
+~~~
+- Retrieves the percentage of completeness of all genomes from the "bacteria log v2.xlsx" Excel sheet (the updated version of "bacteria_log.xlsx").
+- For each species of interest (acetic or lactic), finds the file corresponding to the most complete genome of that species.
+- Creates a new directory ("Acetic_unique"/"Lactic_unique") containing only the most complete genome per species.
+~~~
+
+This directory is then exported to the server so that **Prokka** can be used to annotate all the selected genomes.
+
+## prokka.sh
+**Mjolnir**: *Used after exporting the "Acetic_unique"/"Lactic_unique" directory (containing only the most complete genomes) to the server.*
+~~~
+- Uses the rapid prokaryotic genome annotation program Prokka to annotate the genomes, this will make it a lot easier to align them later on.
+- Returns multiple files but the ".gff" files are the ones that interest us.
+~~~
+
+Once the genomes have been annotated, they can be aligned using **Roary**.
+
+## roary.sh
+**Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
+~~~
+- Uses the pan-genome pipeline program Roary to form a pan-genome alignent from the genomes using the ".gff" files.
+- The alignment is executed using Mafft.
+- Returns many files but the "core_gene_alignment.aln" file is the one that interests us.
+~~~
+
+Once the genomes have been aligned, we can construct the tree using **FasTree**.
+
+
+## tree.sh
+**Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
+~~~
+- 
+~~~
