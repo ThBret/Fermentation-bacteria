@@ -86,5 +86,5 @@ Once the genomes have been aligned, we can construct the tree using **FastTree**
 ## Visualisation
 **Local**: *Single line of code to visualise the tree.*
 ~~~
-  python3 roary_plots.py tree.newick gene_presence_absence.csv
+python3 roary_plots.py tree.newick gene_presence_absence.csv
 ~~~
