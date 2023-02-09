@@ -78,5 +78,14 @@ Once the genomes have been aligned, we can construct the tree using **FasTree**.
 ## tree.sh
 **Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
 ~~~
-- 
+'''
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
+module load roary/3.13.0
+FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln \
+    > tree.newick
+'''
 ~~~
+
+**Local**: *Single line of code to visualise the tree.*
+python3 roary_plots.py tree.newick gene_presence_absence.csv
