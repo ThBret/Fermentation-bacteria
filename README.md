@@ -72,16 +72,19 @@ Once the genomes have been annotated, they can be aligned using **Roary**.
 - Returns many files but the "core_gene_alignment.aln" file is the one that interests us.
 ~~~
 
-Once the genomes have been aligned, we can construct the tree using **FasTree**.
+Once the genomes have been aligned, we can construct the tree using **FastTree**.
 
 
 ## tree.sh
 **Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
+~~~
+- Generates the tree file in Newick format ("tree.newick") from the core alignement file ("core_gene_alignment.aln") using FastTree.
+- Single-line commmand: 
+  FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln > tree.newick
+~~~
 
-```
-FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln > tree.newick
-```
-
-
+## Visualisation
 **Local**: *Single line of code to visualise the tree.*
-python3 roary_plots.py tree.newick gene_presence_absence.csv
+~~~
+  python3 roary_plots.py tree.newick gene_presence_absence.csv
+~~~
