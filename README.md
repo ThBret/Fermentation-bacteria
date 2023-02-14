@@ -64,6 +64,16 @@ This directory is then exported to the server so that **Prokka** can be used to 
 
 Once the genomes have been annotated, they can be aligned using **Roary**.
 
+**What does Roary do?**
+- Converts coding sequences into protein sequences.
+- Cluster these protein sequences by several methods.
+- Further refines clusters into orthologous genes.
+- For each sample, determines if gene is present/absent: produces "gene_presence_absence.csv".-
+- Uses this gene p/a information to build a tree, using FastTree: produces "accessory_binary_genes.fa.newick".
+- Overall, calculates number of genes that are shared, and unique: produces "summary_statistics.txt".
+- Aligns the core genes (if option used, as above) for downstream analyses.
+
+
 ## roary.sh
 **Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
 ~~~
