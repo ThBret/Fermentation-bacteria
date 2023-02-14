@@ -64,6 +64,12 @@ This directory is then exported to the server so that **Prokka** can be used to 
 
 Once the genomes have been annotated, they can be aligned using **Roary**.
 
+~~~
+roary -e --mafft -p 8 *.gff
+~~~
+~~~-e --mafft~~~ aligns the core genes using the tool MAFFT
+~~~-p 8~~~ uses 8 threads
+
 **What does Roary do?**
 - Converts coding sequences into protein sequences.
 - Cluster these protein sequences by several methods.
