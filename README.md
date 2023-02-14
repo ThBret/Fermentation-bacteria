@@ -62,6 +62,10 @@ This directory is then exported to the server so that **Prokka** can be used to 
 - Returns multiple files but the ".gff" files are the ones that interest us.
 ~~~
 
+
+## roary.sh
+**Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
+
 Once the genomes have been annotated, they can be aligned using **Roary**.
 
 ~~~
@@ -79,20 +83,18 @@ roary -e --mafft -p 8 *.gff
 - Overall, calculates number of genes that are shared, and unique: produces "summary_statistics.txt".
 - Aligns the core genes (if option used, as above) for downstream analyses.
 
-
-## roary.sh
-**Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
 ~~~
 - Uses the pan-genome pipeline program Roary to form a pan-genome alignent from the genomes using the ".gff" files.
 - The alignment is executed using Mafft.
 - Returns many files but the "core_gene_alignment.aln" file is the one that interests us.
 ~~~
 
-Once the genomes have been aligned, we can construct the tree using **FastTree**.
-
 
 ## tree.sh
 **Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
+
+Once the genomes have been aligned, we can construct the tree using **FastTree**.
+
 ~~~
 - Generates the tree file in Newick format ("tree.newick") from the core alignement file ("core_gene_alignment.aln") using FastTree.
 - Single-line commmand: 
