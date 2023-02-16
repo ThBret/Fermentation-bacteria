@@ -55,13 +55,24 @@ The scripts used as part of this project are here described in order:
 
 This directory is then exported to the server so that **Prokka** can be used to annotate all the selected genomes.
 
-## prokka.sh
+## Prokka
 **Mjolnir**: *Used after exporting the "Acetic_unique"/"Lactic_unique" directory (containing only the most complete genomes) to the server.*
+
 ~~~
-- Uses the rapid prokaryotic genome annotation program Prokka to annotate the genomes, this will make it a lot easier to align them later on.
-- Returns multiple files but the ".gff" files are the ones that interest us.
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:0
+module load prokka/1.14
+p=/projects/mjolnir1/people/vhp327/Acetic_unique
+cd $p
+mkdir Acetic_unique_annotated
+for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_unique_annotated/"$tag"_prokka "$file"; done
 ~~~
 
+**What is Prokka?**
+- Command line software tool that can be installed on any Unix system. Prokka coordinates a suite of existing software tools to achieve a rich and reliable annotation of genomic bacterial sequences.
+- Prokka expects preassembled genomic DNA sequences in FASTA format. Finished sequences without gaps are the ideal input, but it is expected that the typical input will be a set of scaffold sequences produced by de novo assembly software.
+- The tools used are: **Prodigal** (Hyatt 2010) to identify coding sequence (CDS), **RNAmmer** (Lagesen et al., 2007) to identify ribosomal RNA genes (rRNA), **Aragorn** (Laslett and Canback, 2004) to identify transfer RNA genes, **SignalP** (Petersen et al., 2011) to identify signal leader peptides and **Infernal** (Kolbe and Eddy, 2011) for non-coding RNA.
+- Prokka produces 10 files in the specified output directory, all with a common prefix. The GFF v3 file (.gff) containing sequences and annotations is the one that will be used later in the pipeline.
 
 ## roary.sh
 **Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
