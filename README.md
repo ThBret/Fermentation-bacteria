@@ -55,6 +55,7 @@ The scripts used as part of this project are here described in order:
 
 This directory is then exported to the server so that **Prokka** can be used to annotate all the selected genomes.
 
+
 ## Prokka
 **Mjolnir**: *Used after exporting the "Acetic_unique"/"Lactic_unique" directory (containing only the most complete genomes) to the server.*
 
@@ -74,43 +75,53 @@ for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_u
 - The tools used are: **Prodigal** (Hyatt 2010) to identify coding sequence (CDS), **RNAmmer** (Lagesen et al., 2007) to identify ribosomal RNA genes (rRNA), **Aragorn** (Laslett and Canback, 2004) to identify transfer RNA genes, **SignalP** (Petersen et al., 2011) to identify signal leader peptides and **Infernal** (Kolbe and Eddy, 2011) for non-coding RNA.
 - Prokka produces 10 files in the specified output directory, all with a common prefix. The GFF v3 file (.gff) containing sequences and annotations is the one that will be used later in the pipeline.
 
-## roary.sh
+
+## Roary
 **Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
 
 Once the genomes have been annotated, they can be aligned using **Roary**.
 
 ~~~
-roary -e --mafft -p 8 *.gff
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
+module load roary/3.13.0
+p=/projects/mjolnir1/people/vhp327/Acetic_unique
+cd $p/Acetic_unique_annotated
+mkdir ../Acetic_unique_roary
+for dir in $(ls $p)
+do
+  cp $dir/*.gff ../../Acetic_unique_roary
+done
+cd $p/Acetic_unique_roary
+roary –e –mafft *.gff
 ~~~
-*-e --mafft* aligns the core genes using the tool MAFFT.
-*-p 8* uses 8 threads.
 
 **What does Roary do?**
-- Converts coding sequences into protein sequences.
+- From the ".gff" files given by **Prokka**, converts coding sequences into protein sequences.
 - Cluster these protein sequences by several methods.
 - Further refines clusters into orthologous genes.
 - For each sample, determines if gene is present/absent: produces "gene_presence_absence.csv".
-- Uses this gene p/a information to build a tree, using FastTree: produces "accessory_binary_genes.fa.newick".
+- Uses this gene p/a information to build a tree, using **FastTree**: produces "accessory_binary_genes.fa.newick".
 - Overall, calculates number of genes that are shared, and unique: produces "summary_statistics.txt".
-- Aligns the core genes (if option used, as above) for downstream analyses.
-
-~~~
-- Uses the pan-genome pipeline program Roary to form a pan-genome alignent from the genomes using the ".gff" files.
-- The alignment is executed using Mafft.
-- Returns many files but the "core_gene_alignment.aln" file is the one that interests us.
-~~~
+- Aligns the core genes using **Mafft** (if option used, as above) for downstream analyses: produces "core_gene_alignment.aln".
 
 
-## tree.sh
+## FastTree
 **Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
 
 Once the genomes have been aligned, we can construct the tree using **FastTree**.
 
 ~~~
-- Generates the tree file in Newick format ("tree.newick") from the core alignement file ("core_gene_alignment.aln") using FastTree.
-- Single-line commmand: 
-  FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln > tree.newick
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
+module load roary/3.13.0
+FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln \
+    > tree.newick
 ~~~
+
+**What does FastTree do?**
+- Generates the tree file in **Newick format** ("tree.newick") from the core alignement file ("core_gene_alignment.aln").
+
 
 ## Visualisation
 **Local**: *Single line of code to visualise the tree.*
