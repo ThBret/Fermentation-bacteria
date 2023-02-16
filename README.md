@@ -3,7 +3,7 @@
 The scripts used as part of this project are here described in order:
 
 ## initialiser.py
-**Local**: *Used after downloading whole-genomes sequences from NCBI.*
+###**Local**: *Used after downloading whole-genomes sequences from NCBI.*
 
 - Prepares the working directory.
 - Fills the bacteria log dataframe using the "data_summary.tsv" file present in the folder downloaded from NCBI.
