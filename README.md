@@ -52,7 +52,7 @@ The scripts used as part of this project are here described in order:
 This directory is then exported to the server so that **Prokka** can be used to annotate all the selected genomes.
 
 
-## Prokka [Github](https://github.com/tseemann/prokka)
+## [Prokka](https://github.com/tseemann/prokka)
 **Mjolnir**: *Used after exporting the "Acetic_unique"/"Lactic_unique" directory (containing only the most complete genomes) to the server.*
 
 ~~~
@@ -72,7 +72,7 @@ for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_u
 - Prokka produces 10 files in the specified output directory, all with a common prefix. The GFF v3 file (.gff) containing sequences and annotations is the one that will be used later in the pipeline.
 
 
-## Roary [Github](https://sanger-pathogens.github.io/Roary/)
+## [Roary](https://sanger-pathogens.github.io/Roary/)
 **Mjolnir**: *Used after annotating the genomes located in the "Acetic_unique"/"Lactic_unique" directory with Prokka.*
 
 Once the genomes have been annotated, they can be aligned using **Roary**.
@@ -102,7 +102,7 @@ roary –e –mafft *.gff
 - Aligns the core genes using **Mafft** (if option used, as above) for downstream analyses: produces "core_gene_alignment.aln".
 
 
-## FastTree [...](http://www.microbesonline.org/fasttree/)
+## [FastTree](http://www.microbesonline.org/fasttree/)
 **Mjolnir**: *Used after constructing the pan-genome alignment with Roary.*
 
 Once the genomes have been aligned, we can construct the tree using **FastTree**.
