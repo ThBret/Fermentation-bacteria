@@ -122,7 +122,12 @@ FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln \
 
 
 ## Visualisation
-**Local**: *Single line of code to visualise the tree.*
+### With Phandango
+- Go to http://phandango.net
+- Drag and drop the "tree.newick" and "gene_presence_absence.csv" files onto the landing page.
+- View the tree of samples and their core and pan genomes
+
+### With Roary plots
 ~~~
 python3 roary_plots.py tree.newick gene_presence_absence.csv
 ~~~
