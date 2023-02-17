@@ -37,11 +37,11 @@ done
 
 **What does CheckM do?**
 - Assesses the quality of microbial genomes recovered from isolates, single cells, and metagenomes.
-- Uses **Prodigal** to identify genes in a given sequences.
+- Uses **Prodigal** to identify genes in a given sequence.
 - Places genome bins into a reference genome tree and relies on that phylogenetic placement to identify sets of genes that should be in the genome.
 - Looks for those genes using **Hmmer** to search the genome. 
 - The completeness is an estimate of the fraction of genes that are expected to be there which were actually found. 
-- The contamination is based on identifying the number of single copy genes, that should only be there once.
+- The contamination is based on identifying the number of single-copy genes, that should only be there once.
 - Returns quality assessment files include the percentage of completeness and the degree of contamination for each given genome.
 - The output files are saved in a directory named "output".
 
