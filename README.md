@@ -144,7 +144,7 @@ FastTree -nt -gtr output_with_alignment/core_gene_alignment.aln \
 
 **What does FastTree do?**
 - Infers approximately-maximum-likelihood phylogenetic trees from alignments of nucleotide or protein sequence.
-- Generates the tree file in **Newick format** ("tree.newick") based on the core alignement file ("core_gene_alignment.aln").
+- Generates the tree file in **Newick format** ("tree.newick") based on the core alignment file ("core_gene_alignment.aln").
 - Faster than **PhyML 3.0** and **RAxML 7** for large alignments.
 - (-gtr) --> generalized time-reversible model.
 
