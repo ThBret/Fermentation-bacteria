@@ -17,6 +17,8 @@ The scripts used as part of this project are here described in order:
 **Mjolnir**: *Used after exporting the whole-genome sequence files.*
 
 ~~~
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
 module load checkm-genome/1.1.3
 p=/projects/mjolnir1/people/vhp327/new/
 cd $p
