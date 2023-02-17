@@ -13,7 +13,7 @@ The scripts used as part of this project are here described in order:
 - Saves the full bacteria log data as an **Excel** sheet --> "bacteria_log.xlsx"
 
 
-## [CheckM](https://github.com/tseemann/prokka)
+## [CheckM](https://github.com/Ecogenomics/CheckM)
 **Mjolnir**: *Used after exporting the whole-genome sequence files.*
 
 ~~~
