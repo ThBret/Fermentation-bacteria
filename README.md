@@ -13,10 +13,29 @@ The scripts used as part of this project are here described in order:
 - Saves the full bacteria log data as an **Excel** sheet --> "bacteria_log.xlsx"
 
 
-## qa.sh
+## [CheckM](https://github.com/tseemann/prokka)
 **Mjolnir**: *Used after exporting the whole-genome sequence files.*
 
-- Runs a quality assessment check on all the whole-genome sequences uploaded to the online server using the program **CheckM**.
+~~~
+module load checkm-genome/1.1.3
+p=/projects/mjolnir1/people/vhp327/new/
+cd $p
+mkdir output
+for i in $(ls $p)
+do if [ -d $i ]
+    then
+        checkm lineage_wf -x fna $i ${i}_output
+        cd ${i}_output
+        checkm qa lineage.ms ./ -f qa_${i}.txt
+        mv qa_${i}.txt ../output
+        cd $p
+    fi
+done
+~~~
+
+**What does CheckM do?**
+- Assesses the quality of microbial genomes recovered from isolates, single cells, and metagenomes.
+- Here, we run a quality assessment check on all the whole-genome sequences uploaded to the online server with CheckM.
 - Returns quality assessment files include the percentage of completeness and the degree of contamination for each given genome.
 - The output files are saved in a directory named "output".
 
@@ -69,6 +88,8 @@ for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_u
 - Command line software tool that can be installed on any Unix system. Prokka coordinates a suite of existing software tools to achieve a rich and reliable annotation of genomic bacterial sequences.
 - Prokka expects preassembled genomic DNA sequences in FASTA format. Finished sequences without gaps are the ideal input, but it is expected that the typical input will be a set of scaffold sequences produced by de novo assembly software.
 - The tools used are: **Prodigal** (Hyatt 2010) to identify coding sequence (CDS), **RNAmmer** (Lagesen et al., 2007) to identify ribosomal RNA genes (rRNA), **Aragorn** (Laslett and Canback, 2004) to identify transfer RNA genes, **SignalP** (Petersen et al., 2011) to identify signal leader peptides and **Infernal** (Kolbe and Eddy, 2011) for non-coding RNA.
+- The traditional way to predict what a gene codes for is to compare it with a large database of known sequences, usually at a protein sequence level, and transfer the annotation of the best significant match.
+- Prokka uses this method, but in a hierarchical manner, starting with a smaller trustworthy database, moving to medium-sized but domain-specific databases, and finally to curated models of protein families.
 - Prokka produces 10 files in the specified output directory, all with a common prefix. The GFF v3 file (.gff) containing sequences and annotations is the one that will be used later in the pipeline.
 
 
