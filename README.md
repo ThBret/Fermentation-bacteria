@@ -130,6 +130,8 @@ roary –e –mafft *.gff
 
 
 ## [Peppan](https://github.com/zheminzhou/PEPPAN)
+**Mjolnir**: *Alternative to Roary.*
+
 **PEPPAN (Phylogeny Enhanced Pipeline for PAN-genome)**: Pipeline that can construct a pan-genome from thousands of genetically diversified bacterial genomes. PEPPAN implements a combination of tree- and synteny-based approaches to identify and exclude paralogous genes, as well as similarity-based gene predictions that support consistent annotations of genes and pseudogenes in individual genomes.
 
 PEPPAN's workflow consists of the following five successive groups of operations:
