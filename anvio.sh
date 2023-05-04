@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -c 8 --mem 4G --output=Acetic.xmfa --time 12:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
+#SBATCH -c 8 --mem 4G --output=output_anvio.txt --time 12:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
 module load anvio/7.1
 
 for i in $(ls *.fna); do
