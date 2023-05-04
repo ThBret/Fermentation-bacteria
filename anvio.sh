@@ -20,5 +20,5 @@ done
 for i in $(ls *fa); do
     f=${i%%.*}
     echo -e ${f}"\t"${f}_CONTIGS.db
-done | grep -v 'FIXED' > external_genomes.txt
+done | grep -v 'FIXED' > external-genomes.txt
 
