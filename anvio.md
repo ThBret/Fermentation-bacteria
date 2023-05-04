@@ -1,14 +1,14 @@
 # Anvio pangenomics:
-> These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external_genomes.txt' file) and after downloading the folder containing those files from the server.
+> These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external-genomes.txt' file) and after downloading the folder containing those files from the server.
 
 **1.** Activate the Anvi'o Conda environment.
 ~~~
 conda activate anvio-7.1
 ~~~
 
-**2.** Generate a genomes storage using **anvi-gen-genomes-storage**. The genomes storage is generated from contigs databases corresponding to every genome sequence which are accessed using the 'external_genomes.txt' file. The genomes storage is a needed input file for later steps.
+**2.** Generate a genomes storage using **anvi-gen-genomes-storage**. The genomes storage is generated from contigs databases corresponding to every genome sequence which are accessed using the 'external-genomes.txt' file. The genomes storage is a needed input file for later steps.
 ~~~
-anvi-gen-genomes-storage -e external_genomes.txt -o STORAGE-GENOMES.db 
+anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db 
 ~~~
 
 **3.** With the genomes storage ready, we can use the program **anvi-pan-genome** to run the actual pangenomic analysis.
