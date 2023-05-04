@@ -1,7 +1,5 @@
 # Anvio pangenomics:
-/!\ 
-These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external_genomes.txt' file) and after downloading the folder containing those files from the server. 
-/!\
+> These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external_genomes.txt' file) and after downloading the folder containing those files from the server.
 
 **1.** Activate the Anvi'o Conda environment.
 ~~~
