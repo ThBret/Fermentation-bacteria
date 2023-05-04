@@ -22,7 +22,12 @@ mv STORAGE-GENOMES.db PANGENOME
 cd PANGENOME
 ~~~
 
-**5.** After the analysis is done, we can use the program **anvi-display-pan** to display your results.
+**5.** Compute both the geometric homogeneity and functional homogeneity for the gene clusters in a pangenome database and add this information to the database. Since the phylogenemic inference cannot be performed on the entire pangenome, we will instead only use gene clusters with significant variation (combined homogeneity < 0.75).
+~~~
+anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
+~~~
+
+**6.** After the pangenomic analysis is done and the homogeneity values have been computed, we can use the program **anvi-display-pan** to display the results.
 ~~~
 anvi-display-pan -p PANGENOME-PAN.db -g STORAGE-GENOMES.db
 ~~~
@@ -35,11 +40,6 @@ anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -
 *Optional*: Get the same FASTA file with non-concatenated amino acids.
 ~~~
 anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -o genes.fa
-~~~
-  
-**6.** Compute both the geometric homogeneity and functional homogeneity for the gene clusters in a pangenome database and add this information to the database. Since the phylogenemic inference cannot be performed on the entire pangenome, we will instead only use gene clusters with significant variation (combined homogeneity < 0.75).
-~~~
-anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
 ~~~
 
 **7.** Get a FASTA file with aligned and concatenated amino acid sequences corresponding to the selected gene clusters. This will be used to perform the phylogenomic analysis. We set the *--max-combined-homogeneity-index* to 0.75 to limit our selection to highly variable gene clusters (as they will have a bigger impact on the phylogeny than gene clusters with low variability). We also set the *genomes-gene-cluster-occurs* parameter to 32 as we have 32 genomes in the analysis and we want the gene clusters to be present in every genome.
