@@ -1,4 +1,4 @@
-## July/August 2023 —> New trees based on selected genes and pathways specific to acetic acid bacteria:
+## July-August 2023 - New trees based on selected genes and pathways specific to acetic acid bacteria:
 
 # 1) General tree
 1. List pathways/proteins/enzymes of interest and find the corresponding Pfam accessions.
