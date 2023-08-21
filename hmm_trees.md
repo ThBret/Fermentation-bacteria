@@ -11,16 +11,17 @@ conda activate anvio-dev
 ```bash
 anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list PF03070 PF08042 PF13360 PF00171 PF00465 PF02317 PF00005 PF02887 PF00923 PF03971 PF00168 PF01161 PF13243 PF00330 PF17327 PF00196 PF00958 PF08240 PF00118  -O HMM_AAB
  ```
-6. Now, given this HMM, can go through every contigs database (listed in external-genomes.txt) and retrieve corresponding sequences (sequences that get a hit given the HMM). The sequences are concatenated so that a phylogenetic tree can be drawn from them (aligned sequences are a prerequisite).
-7. Now a phylogenetic tree can be drawn from the pfam-proteins.fa file using the anvi-gen-phylogenomic-tree command. However, this will generate a rough tree which is not entirely reliable.
-8. Alternatively, can draw the tree using IQ-tree simply by using the following command: iqtree -s pfam-proteins.fa
+6. Annotate the genomes with HMMs hits using the **anvi-run-hmms** command.
+6. Now we can go through every contigs database (listed in the file *external-genomes.txt*) and retrieve sequences that got a hit for any given HMM. The sequences are concatenated so that a phylogenetic tree can be drawn from them (as aligned sequences are a prerequisite). Furthermore, we select on the best hits using the *--return-best-hit* flag. From the Anvi'o manual: "This flag is most appropriate if one wishes to perform phylogenomic analyses, which ensures that for any given protein family, there will be only one gene reported from a given genome".
+![](AAB-general-tree.png)
+8. Now a phylogenetic tree can be drawn from the pfam-proteins.fa file using the anvi-gen-phylogenomic-tree command. However, this will generate a rough tree which is not entirely reliable.
+9. Alternatively, can draw the tree using IQ-tree simply by using the following command: iqtree -s pfam-proteins.fa
 
 Individual trees!!
 # 1) Set up HMMs
 pfams=("PF03070" "PF08042" "PF13360" "PF00171" "PF00465" "PF02317" "PF00005" "PF02887" "PF00923" "PF03971" "PF00168" "PF01161" "PF13243" "PF00330" "PF17327" "PF00196" "PF00958" "PF08240" "PF00118")
 for pfam in "${pfams[@]}"; do anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list $pfam -O HMMs/${pfam}_HMM ; done
 
-![](AAB-general-tree.png)
 # 2) Annotating the genome with KOfam hits
 for hmm in $(ls HMMs); do for file in *CONTIGS.db; do anvi-run-hmms -c "$file" -H HMMs/$hmm -T 4; done ; done
 
