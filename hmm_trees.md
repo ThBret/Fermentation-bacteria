@@ -9,8 +9,7 @@ conda activate anvio-dev
  ```
 4. Now, given a list of Pfam accessions of interest, run the **anvi-script-pfam-accessions-to-hmms-directory** command to generate **Hidden Markov Models (HMMs)** corresponding to each Pfam sequence. This will allow us later on to scan through any contigs database and detect the presence of such sequences. An output folder for the HMMs also has to be provided, here we name it *HMM_AAB* (for Hidden Markov Model - Acetic Acid Bacteria).
 ```bash
-anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list PF03070 PF08042 PF13360 PF00171 PF00465 PF02317 PF00005 PF02887 PF00923 PF03971 PF00168 PF01161 PF13243 PF00330 PF17327 PF00196 PF00958 PF08240 PF00118  -O HMM_AAB<img width="812" alt="Screenshot 2023-08-21 at 10 56 47" src="https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/a441e04a-ba20-4c44-b817-a70f6c0c4e25">
-
+anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list PF03070 PF08042 PF13360 PF00171 PF00465 PF02317 PF00005 PF02887 PF00923 PF03971 PF00168 PF01161 PF13243 PF00330 PF17327 PF00196 PF00958 PF08240 PF00118  -O HMM_AAB
  ```
 6. Now, given this HMM, can go through every contigs database (listed in external-genomes.txt) and retrieve corresponding sequences (sequences that get a hit given the HMM). The sequences are concatenated so that a phylogenetic tree can be drawn from them (aligned sequences are a prerequisite).
 7. Now a phylogenetic tree can be drawn from the pfam-proteins.fa file using the anvi-gen-phylogenomic-tree command. However, this will generate a rough tree which is not entirely reliable.
