@@ -19,6 +19,7 @@ anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list PF03070 PF0
  ```
 *Note: The rest of the code was run from the server in a file called metabolics.sh (shown below).*
 ![](AAB-general-tree.png)
+
 4. Annotate the genomes with HMMs hits using the **anvi-run-hmms** command.
 5. Now we can go through every contigs database (listed in the file *external-genomes.txt*) and retrieve sequences that got a hit for any given HMM using the **anvi-get-sequences-for-hmm-hits** command. The sequences are concatenated so that a phylogenetic tree can be drawn from them (as aligned sequences are a prerequisite). Furthermore, we select on the best hits using the *--return-best-hit* flag. From the Anvi'o manual: "This flag is most appropriate if one wishes to perform phylogenomic analyses, which ensures that for any given protein family, there will be only one gene reported from a given genome". The concatenated best hits are returned in the *pfam-proteins.fa* file.
 6. Now a phylogenetic tree can be drawn from the *pfam-proteins.fa* file using the **anvi-gen-phylogenomic-tree** command. However, this will generate a rough tree which is not entirely reliable. Alternatively, a tree can drawn using IQ-TREE simply by using the following command:
