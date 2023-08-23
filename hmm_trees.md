@@ -30,6 +30,7 @@ iqtree -s pfam-proteins.fa
 
 
 ## Individual trees
+The idea here is to see if the tree structure would vary depending on the genes we base it on. To test this hypothesis, we build individual phylogenies, still using all 32 genomes, but each being based on a different Pfam identifier.
 ### 1) Set up HMMs
 For each individual Pfam ID, generate a corresponding Hidden Markov Model.
 ```bash
