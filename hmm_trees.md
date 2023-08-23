@@ -50,3 +50,4 @@ for hmm in $(ls); do anvi-get-sequences-for-hmm-hits --external-genomes ../exter
 ```
 ### 4) Building the trees with IQ-TREE
 ![](iqtree.png)
+The resulting trees are shown in the *trees.pdf* file.
