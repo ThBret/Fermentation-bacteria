@@ -77,9 +77,34 @@ done
 
 This directory is then exported to the server so that we can proceed to the following stages with **Anvi'o**.
 
-# Pangenome tree with Anvi'o
+# Complementary plots
 
-...
+G-C contents:
+for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done
+
+# Anvi'o pangenomics
+
+conda activate anvio-7.1
+
+anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db
+
+anvi-pan-genome -g STORAGE-GENOMES.db -n PANGENOME
+  
+mv STORAGE-GENOMES.db PANGENOME
+
+cd PANGENOME
+
+anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
+
+anvi-display-pan -p PANGENOME-PAN.db -g STORAGE-GENOMES.db
+
+anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db --concatenate-gene-clusters -o filtered-concatenated-proteins.fa --max-num-genes-from-each-genome 1 --min-num-genes-from-each-genome 1 --min-num-genomes-gene-cluster-occurs 32 --max-combined-homogeneity-index 0.75
+
+#anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -o genes.fa#
+
+anvi-gen-phylogenomic-tree -f filtered-concatenated-proteins.fa -o tree.newick
+
+anvi-interactive -p phylogenomic-profile.db -t tree.newick --title "Pangenome tree" --manual
 
 
 # Single-copy core gene
