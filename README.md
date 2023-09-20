@@ -1,6 +1,6 @@
 # Fermentation-bacteria
 
-The entire pipeline of this year-long project is unrolled here in detail.
+> The entire pipeline of this year-long project is unrolled here in detail.
 
 # November-December 2022 - Preprocessing
 ## 1) Downloading the whole-genome sequences
