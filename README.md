@@ -377,8 +377,12 @@ This script returns a text file named *CDS_summary.txt* which contains 3 columns
 Next, we can assess the G-C content for each genome using the following command, executed on the **Mjolnir** server in the *Acetic_unique* directory:
 `for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done`
 
-# March-May 2023 - HMM tree
+# March-May 2023 - Single-copy core genes tree
+After discussing our current methods and their limitations, we decided to try an alternative to the pangenome approach: a tree based on a predetermined set of 71 bacteria-specific single-copy core genes (SCCGs) i.e. genes that are present in exactly one copy in the genome. These SCCGs are included in *Bacteria_71*, an HMM profile provided by **Anvi'o**. SCCGs provide a less biased basis for tree construction as they minimise the risk that the genes being considered are not under similar evolutionary pressures (one of the built-in assumptions in phylogenetics). If we were to use genes regardless of the presence of multiple gene copies within the same genome, as we did with the pangenome tree construction, we would be more likely to violate that assumption because different copies of the same gene may experience different evolutionary pressures. 
 
+We can reuse some of our previous code here, in this custom Slurm script (*singlecopycore.sh*).
+
+### singlecopycore.sh
 ```bash
 #!/bin/sh
 #SBATCH -c 8 --mem 4G --output=output_sccg.txt --time 16:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
@@ -395,11 +399,7 @@ module load iqtree
 iqtree -s ALIGN
 ```
 
-# June 2023 - Single-copy core genes tree
-
-Single-copy core genes (SCCGs) or just single-copy genes (SCGs), are genes that are present in exactly 1 copy in most of the organisms we happen to currently be talking about. To compare genes across organisms, we of course need those organisms we are considering to actually have these genes. But we also want genes in single-copy (rather than genes that tend to exist in multiple copies within our target organisms) because one of the built-in assumptions in phylogenetics in general is that the genes being considered are under similar evolutionary pressures. This is tenuous to begin with even with single-copy genes (and is probably never actually entirely true), but it becomes much more likely we are violating that assumption if there are multiple gene-copies within the same genome (these are known as paralogs). So that’s why when we are talking about phylogenomics in general, SCGs play such a predominant role.
-
-Constructing the phylogeny with **IQTree** using bootstrapping (1,000 bootstraps).
+Repeat the tree construction with **IQTree** using bootstrapping (1,000 bootstraps).
 ### singlecopycore-bp.sh
 ```bash
 #!/bin/sh
@@ -413,6 +413,7 @@ module load iqtree
 iqtree -s ALIGN-bp -bb 1000 -msub nuclear
 ```
 
+Below is the single-copy core genes tree with support values.
 ![sccgtree-bs](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/1da84c37-e22c-40a9-b702-c5010dc300a9)
 
 
