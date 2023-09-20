@@ -53,7 +53,9 @@ This script creates a directory named *Genomes* to store all the whole-genome se
 ## 3) Quality assessment using [CheckM](https://github.com/Ecogenomics/CheckM)
 Once all the genome sequences have been downloaded and their information saved to the *bacteria_log.xlsx* Excel sheet, we can export them to the **Mjolnir** server with the following command:
 
-`scp -r /Users/thibaultbret/Genomes vhp327@mjolnirhead01fl.unicph.domain:/projects/mjolnir1/people/vhp327/`
+```bash
+scp -r /Users/thibaultbret/Genomes vhp327@mjolnirhead01fl.unicph.domain:/projects/mjolnir1/people/vhp327/
+```
 
 Now that the genome sequences are present on the server, we can proceed to the quality assessment. We will use **CheckM**, a set of tools already installed on the server that provides robust estimates of genome completeness and contamination. CheckM assumes by default that the genomes consist of contigs/scaffolds in FASTA format, which corresponds to the format of our files. I wrote a custom Slurm script to run a CheckM lineage analysis on the server: *qa.sh*.
 
@@ -319,60 +321,60 @@ Making the first tree was a long process as a lot of options were explored inclu
 > These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external-genomes.txt' file) and after downloading the folder containing those files from the server.
 
 **1.** Activate the Anvi'o Conda environment.
-~~~
+```bash
 conda activate anvio-7.1
-~~~
+```
 
 **2.** Generate a genomes storage using **anvi-gen-genomes-storage**. The genomes storage is generated from contigs databases corresponding to every genome sequence which are accessed using the 'external-genomes.txt' file. The genomes storage is a needed input file for later steps.
-~~~
+```bash
 anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db 
-~~~
+```
 
 **3.** With the genomes storage ready, we can use the program **anvi-pan-genome** to run the actual pangenomic analysis.
-~~~
+```bash
 anvi-pan-genome -g STORAGE-GENOMES.db -n PANGENOME
-~~~
+```
 
 **4.** Move the genomes storage to the newly created Pangenome folder and change the working directory to this same folder. The rest of the analysis will be performed within that directory.
-~~~
+```bash
 mv STORAGE-GENOMES.db PANGENOME
 cd PANGENOME
-~~~
+```
 
 **5.** Compute both the geometric homogeneity and functional homogeneity for the gene clusters in a pangenome database and add this information to the database. Since the phylogenemic inference cannot be performed on the entire pangenome, we will instead only use gene clusters with significant variation (combined homogeneity < 0.75).
-~~~
+```bash
 anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
-~~~
+```
 
 **6.** After the pangenomic analysis is done and the homogeneity values have been computed, we can use the program **anvi-display-pan** to display the results.
-~~~
+```bash
 anvi-display-pan -p PANGENOME-PAN.db -g STORAGE-GENOMES.db
-~~~
+```
 
 *Optional*: Get a FASTA file with aligned and concatenated amino acid sequences corresponding to all gene clusters found in the pangenome. This is optional since we cannot build the phylogeny using all gene clusters (as the alignment size would be too enormous).
-~~~
+```bash
 anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db --concatenate-gene-clusters -o concatenated-proteins.fa --max-num-genes-from-each-genome 1
-~~~
+```
 
 *Optional*: Get the same FASTA file with non-concatenated amino acids.
-~~~
+```bash
 anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -o genes.fa
-~~~
+```
 
 **7.** Get a FASTA file with aligned and concatenated amino acid sequences corresponding to the selected gene clusters. This will be used to perform the phylogenomic analysis. We set the *--max-combined-homogeneity-index* to 0.75 to limit our selection to highly variable gene clusters (as they will have a bigger impact on the phylogeny than gene clusters with low variability). We also set the *genomes-gene-cluster-occurs* parameter to 32 as we have 32 genomes in the analysis and we want the gene clusters to be present in every genome.
-~~~
+```bash
 anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db --concatenate-gene-clusters -o filtered-concatenated-proteins.fa --max-num-genes-from-each-genome 1 --min-num-genes-from-each-genome 1 --min-num-genomes-gene-cluster-occurs 32 --max-combined-homogeneity-index 0.75
-~~~
+```
 
 **8.** Perform phylogenetic inference based on the previously generated FASTA file containing aligned and concatenated gene clusters of interest.
-~~~
+```bash
 anvi-gen-phylogenomic-tree -f filtered-concatenated-proteins.fa -o tree.newick
-~~~
+```
 
 **9.** Display the phylogenetic tree in the Anvi'o interactive interface.
-~~~
+```bash
 anvi-interactive -p phylogenomic-profile.db -t tree.newick --title "Pangenome tree" --manual
-~~~
+```
 
 # April-May 2023 - Complementary plots
 ## CDS content
@@ -411,7 +413,9 @@ This script returns a text file named *CDS_summary.txt* which contains 3 columns
 
 ## G-C content
 Next, we can assess the G-C content for each genome using the following command, executed on the **Mjolnir** server in the *Acetic_unique* directory:
-`for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done`
+```bash
+for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done
+```
 
 # March-May 2023 - Single-copy core genes tree
 After discussing our current methods and their limitations, we decided to try an alternative to the pangenome approach: a tree based on a predetermined set of 71 bacteria-specific single-copy core genes (SCCGs) i.e. genes that are present in exactly one copy in the genome. These SCCGs are included in *Bacteria_71*, an HMM profile provided by **Anvi'o**. SCCGs provide a less biased basis for tree construction as they minimise the risk that the genes being considered are not under similar evolutionary pressures (one of the built-in assumptions in phylogenetics). If we were to use genes regardless of the presence of multiple gene copies within the same genome, as we did with the pangenome tree construction, we would be more likely to violate that assumption because different copies of the same gene may experience different evolutionary pressures. 
