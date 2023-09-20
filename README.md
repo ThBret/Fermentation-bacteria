@@ -439,7 +439,7 @@ iqtree -s ALIGN
 Repeat the tree construction with **IQTree** using bootstrapping (1,000 bootstraps).
 
 <details>
-  <summary><b>singlecopycore-bp.sh</b> <i>(see code)</i></summary>
+  <summary><b>singlecopycore-bs.sh</b> <i>(see code)</i></summary>
 
 ```bash
 #!/bin/sh
