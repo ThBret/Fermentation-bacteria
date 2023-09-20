@@ -390,6 +390,22 @@ for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[
 
 # March-May 2023 - HMM tree
 
+```bash
+#!/bin/sh
+#SBATCH -c 8 --mem 4G --output=output_sccg.txt --time 16:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
+module load anvio/7.1
+# 1) Setup
+p=/projects/mjolnir1/people/vhp327/Acetic_all
+cd $p
+# 2) Run HMMs for 71 Bacteria copy core genes
+for file in $(ls *.db); do anvi-run-hmms -c $file -T 4 -I Bacteria_71 ; done
+# 3) Estimating metabolism
+anvi-get-sequences-for-hmm-hits -e external-genomes.txt --hmm-sources Bacteria_71 --get-aa-sequences --concatenate-genes -o ALIGN --return-best-hit
+# 4) Constructing the tree with IQTree
+module load iqtree
+iqtree -s ALIGN
+```
+
 # June 2023 - Single-copy core genes tree
 
 Single-copy core genes (SCCGs) or just single-copy genes (SCGs), are genes that are present in exactly 1 copy in most of the organisms we happen to currently be talking about. To compare genes across organisms, we of course need those organisms we are considering to actually have these genes. But we also want genes in single-copy (rather than genes that tend to exist in multiple copies within our target organisms) because one of the built-in assumptions in phylogenetics in general is that the genes being considered are under similar evolutionary pressures. This is tenuous to begin with even with single-copy genes (and is probably never actually entirely true), but it becomes much more likely we are violating that assumption if there are multiple gene-copies within the same genome (these are known as paralogs). So that’s why when we are talking about phylogenomics in general, SCGs play such a predominant role.
@@ -400,12 +416,10 @@ Constructing the phylogeny with **IQTree** using bootstrapping (1,000 bootstraps
 #!/bin/sh
 #SBATCH -c 8 --mem 4G --output=output_sccg.txt --time 16:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
 module load anvio/7.1
-
 # 1) Setup
 p=/projects/mjolnir1/people/vhp327/Acetic_all
 cd $p
-
-# 4) Constructing the tree with IQTree
+# 2) Constructing the tree with IQTree
 module load iqtree
 iqtree -s ALIGN-bp -bb 1000 -msub nuclear
 ```
