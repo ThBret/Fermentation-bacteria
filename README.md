@@ -55,8 +55,8 @@ Now that the genome sequences are present on the server, we can proceed to the q
 
 I wrote a custom script to run a CheckM lineage analysis
 
-*qa.sh*
-~~~
+### qa.sh
+```bash
 #!/bin/sh
 #SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
 module load checkm-genome/1.1.3
@@ -73,7 +73,7 @@ do if [ -d $i ]
         cd $p
     fi
 done
-~~~
+```
 
 **What does CheckM do?**
 - Assesses the quality of microbial genomes recovered from isolates, single cells, and metagenomes.
@@ -118,6 +118,8 @@ Custom script --> first_tree.py
 - Creates a new directory ("Acetic_unique"/"Lactic_unique") containing only the most complete genome per species.
 
 This directory is then exported to the server so that we can proceed to the following stages with **Anvi'o**.
+
+Making the first tree was a long process as a lot of options were explored including **MUSCLE**, **MAUVE** and **Roary**. We finally decided to use **Anvi'o** after assessing that it was the most suitable tool in this situation.
 
 # Complementary plots
 
