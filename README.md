@@ -455,7 +455,7 @@ iqtree -s ALIGN-bp -bb 1000 -msub nuclear
 
 </details>
 
-Below is the single-copy core genes tree with support values.
+Below is the single-copy core genes tree with support values:
 ![sccgtree-bs](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/1da84c37-e22c-40a9-b702-c5010dc300a9)
 
 
@@ -517,6 +517,12 @@ iqtree -s pfam-proteins.fa
 iqtree -s pfam-proteins.fa
 ```
 *Note: However, after trying to run this code, I noticed that the model selection process runs indefinitely (possibly because of the number of sequences the tree is based on). Therefore, I decided to stick to the Anvi'o-generated tree.*
+
+Below is the general Pfam tree:
+<img width="659" alt="pfam-general-tree" src="https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/251cda9d-4bac-4905-b49f-f7e5f09f9b7f">
+
+And a comparison of the general Pfam tree (on the left) and the SCCG tree (on the right):
+<img width="1361" alt="Comparison of trees" src="https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/a9828d33-b7e4-4254-be3f-6578613130f9">
 
 
 ## Individual trees
