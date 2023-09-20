@@ -478,8 +478,37 @@ conda activate anvio-dev
 ```bash
 anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list PF03070 PF08042 PF13360 PF00171 PF00465 PF02317 PF00005 PF02887 PF00923 PF03971 PF00168 PF01161 PF13243 PF00330 PF17327 PF00196 PF00958 PF08240 PF00118  -O HMM_AAB
  ```
-*Note: The rest of the code was run from the server in a file called metabolics.sh (shown below).*
-![](pfam-general-tree.png)
+*Note: The rest of the code was run from the server in a custom Slurm script called metabolics.sh (shown below).*
+
+<details>
+  <summary><b>metabolics.sh</b> <i>(see code)</i></summary>
+
+```bash
+#!/bin/sh
+#SBATCH -c 8 --mem 4G --output=output_meta.txt --time 12:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
+module load anvio/7.1
+
+# 1) Setup
+p=/projects/mjolnir1/people/vhp327/Acetic_all
+cd $p
+# 2) Annotating the genome with KOfam hits
+for file in $(ls *.db); do anvi-run-hmms -c $file  -H HMM_AAB ; done
+# 3) Estimating metabolism
+anvi-get-sequences-for-hmm-hits --external-genomes external-genomes.txt \
+                                -o pfam-proteins.fa \
+                                --hmm-source HMM_AAB \
+                                --return-best-hit \
+                                --get-aa-sequences \
+                                --concatenate
+# 4) Compute the phylogenomic tree
+anvi-gen-phylogenomic-tree -f pfam-proteins.fa \
+                           -o pfam-phylogenomic-tree.txt
+# 5) build iq-tree
+module load iqtree
+iqtree -s pfam-proteins.fa
+```
+
+</details>
 
 4. Annotate the genomes with HMMs hits using the **anvi-run-hmms** command.
 5. Now we can go through every contigs database (listed in the file *external-genomes.txt*) and retrieve sequences that got a hit for any given HMM using the **anvi-get-sequences-for-hmm-hits** command. The sequences are concatenated so that a phylogenetic tree can be drawn from them (as aligned sequences are a prerequisite). Furthermore, we select on the best hits using the *--return-best-hit* flag. From the Anvi'o manual: "This flag is most appropriate if one wishes to perform phylogenomic analyses, which ensures that for any given protein family, there will be only one gene reported from a given genome". The concatenated best hits are returned in the *pfam-proteins.fa* file.
@@ -526,6 +555,6 @@ for seq in $(ls *.fa); do iqtree -s $seq -bb 1000 ; done
 
 </details>
 
-The resulting trees are shown in the *trees-bp.pdf* file.
+The resulting trees are shown in the *pfamtrees-bs.pdf* file.
 
 
