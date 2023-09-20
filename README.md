@@ -510,7 +510,22 @@ cd HMMs
 for hmm in $(ls); do anvi-get-sequences-for-hmm-hits --external-genomes ../external-genomes.txt -o  ../PFAM_seqs/${hmm%%_HMM}-proteins.fa --hmm-source $hmm --return-best-hit --get-aa-sequences --concatenate ; done
 ```
 ### 4) Building the trees with IQ-TREE
-![](iqtree.png)
-The resulting trees are shown in the *trees.pdf* file.
+The following custom Slurm script (*pfamtrees.sh*) is executed in the *PFAM_seqs* directory, which contains all the Pfam HMMs previously generated, on the **Mjolnir** remote server. It generates phylogenies based on each individual Pfams with bootstrapping.
+
+<details>
+  <summary><b>pfamtrees.sh</b> <i>(see code)</i></summary>
+
+```bash
+#!/bin/sh
+#SBATCH -c 8 --mem 4G --output=output_iqtree.txt --time 24:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
+module load iqtree
+
+# Construct iq-trees
+for seq in $(ls *.fa); do iqtree -s $seq -bb 1000 ; done
+```
+
+</details>
+
+The resulting trees are shown in the *trees-bp.pdf* file.
 
 
