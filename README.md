@@ -1,4 +1,4 @@
-# Fermentation-bacteria
+![sccgtree-bs](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/a3f80e6c-f99c-4c98-a2db-1df375a07ee3)# Fermentation-bacteria
 
 > The entire pipeline of this year-long project is unrolled here in detail.
 
@@ -363,7 +363,10 @@ for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[
 
 # June 2023 - Single-copy core genes tree
 
-...
+Single-copy core genes (SCCGs) or just single-copy genes (SCGs), are genes that are present in exactly 1 copy in most of the organisms we happen to currently be talking about. To compare genes across organisms, we of course need those organisms we are considering to actually have these genes. But we also want genes in single-copy (rather than genes that tend to exist in multiple copies within our target organisms) because one of the built-in assumptions in phylogenetics in general is that the genes being considered are under similar evolutionary pressures. This is tenuous to begin with even with single-copy genes (and is probably never actually entirely true), but it becomes much more likely we are violating that assumption if there are multiple gene-copies within the same genome (these are known as paralogs). So that’s why when we are talking about phylogenomics in general, SCGs play such a predominant role.
+
+![sccgtree-bs](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/1da84c37-e22c-40a9-b702-c5010dc300a9)
+
 
 # July-August 2023 - New trees based on selected genes and pathways specific to acetic acid bacteria
 
