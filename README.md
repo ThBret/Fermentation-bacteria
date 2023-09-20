@@ -46,7 +46,6 @@ bacteria_log.to_excel('/Users/thibaultbret/bacteria_log00.xlsx')
 This script creates a directory named *Genomes* to store all the whole-genome sequences. Unnecessary files are removed. Additionally, the sequences are grouped in subfolders corresponding to their species. The script then fills a **Pandas** data frame with information on the genomes extracted from the "data_summary.tsv" file present in the original folders downloaded from **NCBI**. This includes the organism qualifier, the taxonomy ID, the assembly name, the assembly accession, the annotation level, the genome size, the submission date, the gene count, the corresponding BioProject and BioSample IDs, whether it is part of the lactic or the acetic bacterial family, and information on the isolation source (species, body part and country/region). Finally, the the full Pandas log data frame is exported as an **Excel** file named *bacteria_log.xlsx*
 
 ## 3) Quality assessment using [CheckM](https://github.com/Ecogenomics/CheckM)
-
 Once all the genome sequences have been downloaded and their information saved to the *bacteria_log.xlsx* Excel sheet, we can export them to the **Mjolnir** server with the following command:
 
 `scp -r /Users/thibaultbret/Genomes vhp327@mjolnirhead01fl.unicph.domain:/projects/mjolnir1/people/vhp327/`
@@ -84,8 +83,7 @@ done
 - The output files are saved in a directory named *output*.
 
 ## 4) Quality filtering
-
-After running the CheckM analysis on the server, output files are returned and saved in a directory named *output*. This folder is imported locally to filter the list of genomes based on the results of the completeness and contamination assessments. The filtering is performed by another custom Python script: *qa_filtering.py*.
+> After running the CheckM analysis on the server, output files are returned and saved in a directory named *output*. This folder is imported locally to filter the list of genomes based on the results of the completeness and contamination assessments. The filtering is performed by another custom Python script: *qa_filtering.py*.
 
 ### qa_filtering.py
 ```python
@@ -212,8 +210,7 @@ if __name__ == "__main__":
 This custom script writes a file (*sort_file.txt*) that lists all the genomes and indicates whether a genome is part of the Lactic or the Acetic bacterial family. Then, nested species folders in the *Genomes* directory are removed and all the bacterial genomes are moved to either of the newly created *Acetic* and *Lactic* directory. Genomes are assigned to a directory based on information present in the sort file. That way, lactic and acetic bacteria can be processed separately for later steps of the analysis.
 
 ## 6) Further filtering (one sequence per species)
-After discussing Custom script --> first_tree.py
-**Local**: *Used after separating the acetic bacteria from the lactic bacteria and filtering out contaminated and incomplete genomes.*
+After discussing the next stages of the project, we agreed to start by only using one genome per species in the phylogeny. Since we are comparing a multitude of species whose genomes vary quite significantly, we concluded that using multiple genomes per species would be unnecessary and would only add to the computational complexity of the task. Therefore, I imported the *Acetic* directory from the server and ran another custom Python script locally (first_tree.py) which finds the most complete genome for each species and copies it to a new directory named *Acetic_unique*.
 
 ### first_tree.py
 ```python
@@ -260,46 +257,95 @@ if __name__ == "__main__":
     get_most_complete_genomes(data = 'bacteria_log2.xlsx', Complete = False, Strict = False)
 ```
 
-- Retrieves the percentage of completeness of all genomes from the "bacteria log v2.xlsx" Excel sheet (the updated version of "bacteria_log.xlsx").
-- For each species of interest (acetic or lactic), finds the file corresponding to the most complete genome of that species.
-- Creates a new directory ("Acetic_unique"/"Lactic_unique") containing only the most complete genome per species.
+This script retrieves the percentage of completeness of all genomes from the "bacteria log v2.xlsx" Excel sheet (the updated version of "bacteria_log.xlsx"). For each species of interest, it finds the sequence file corresponding to the most complete genome of that species. Then it creates a new directory (*Acetic_unique*) containing only the most complete genome per species.
 
-This directory is then exported to the server so that we can proceed to the construction of the first phylogeny.
+This directory is then exported to the server so that we can proceed with the construction of the first phylogeny.
 
-# January-February 2022 - First attempts at Pangenomics
+## 7) Genome annotation using [Prokka](https://github.com/tseemann/prokka)
+After exporting the *Acetic_unique* directory to the **Mjolnir** server and while looking into programs that could be used to run a pangenomic analysis, we performed genome annotation using a command line tool called **Prokka**. Genome annotation was initially meant to generate files that could be used to run a pangenomic analysis with **Roary**. However, when we decided against using Roary (as it is meant to be used on sequences coming from a single species), the Prokka annotation still retained its significance by generating files containing data that would be used later in the pipeline to produce complementary plots.
+
+### prokka.sh
+```bash
+#!/bin/sh
+#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:0
+module load prokka/1.14
+p=/projects/mjolnir1/people/vhp327/Acetic_unique
+cd $p
+mkdir Acetic_unique_annotated
+for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_unique_annotated/"$tag"_prokka "$file"; done
+```
+
+**What is Prokka?**
+- Command line software tool that can be installed on any Unix system. Prokka coordinates a suite of existing software tools to achieve a rich and reliable annotation of genomic bacterial sequences.
+- Prokka expects preassembled genomic DNA sequences in FASTA format. Finished sequences without gaps are the ideal input, but it is expected that the typical input will be a set of scaffold sequences produced by de novo assembly software.
+- The tools used are: **Prodigal** (Hyatt 2010) to identify coding sequence (CDS), **RNAmmer** (Lagesen et al., 2007) to identify ribosomal RNA genes (rRNA), **Aragorn** (Laslett and Canback, 2004) to identify transfer RNA genes, **SignalP** (Petersen et al., 2011) to identify signal leader peptides and **Infernal** (Kolbe and Eddy, 2011) for non-coding RNA.
+- The traditional way to predict what a gene codes for is to compare it with a large database of known sequences, usually at a protein sequence level, and transfer the annotation of the best significant match.
+- Prokka uses this method, but in a hierarchical manner, starting with a smaller trustworthy database, moving to medium-sized but domain-specific databases, and finally to curated models of protein families.
+- Prokka produces 10 files in the specified output directory, all with a common prefix. The GFF v3 file (.gff) containing sequences and annotations is the one that will be used later in the pipeline.
+
+# January-February 2023 - First attempts at Pangenomics
 Making the first tree was a long process as a lot of options were explored including **MUSCLE**, **MAUVE**, **Roary** and **PEPPAN**. We finally decided to use **Anvi'o** after assessing that it was the most suitable tool in this situation.
 
+# March-May 2023 - Anvi'o Pangenomics
+> These commands are run locally after running the **anvio.sh** script on the server (which generates contigs databases for every genome and the 'external-genomes.txt' file) and after downloading the folder containing those files from the server.
 
-# April 2022 - Complementary plots
-
-G-C contents:
-for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done
-
-# March 2022 - Anvi'o pangenomics
-
+**1.** Activate the Anvi'o Conda environment.
+~~~
 conda activate anvio-7.1
+~~~
 
-anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db
+**2.** Generate a genomes storage using **anvi-gen-genomes-storage**. The genomes storage is generated from contigs databases corresponding to every genome sequence which are accessed using the 'external-genomes.txt' file. The genomes storage is a needed input file for later steps.
+~~~
+anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db 
+~~~
 
+**3.** With the genomes storage ready, we can use the program **anvi-pan-genome** to run the actual pangenomic analysis.
+~~~
 anvi-pan-genome -g STORAGE-GENOMES.db -n PANGENOME
-  
+~~~
+
+**4.** Move the genomes storage to the newly created Pangenome folder and change the working directory to this same folder. The rest of the analysis will be performed within that directory.
+~~~
 mv STORAGE-GENOMES.db PANGENOME
-
 cd PANGENOME
+~~~
 
+**5.** Compute both the geometric homogeneity and functional homogeneity for the gene clusters in a pangenome database and add this information to the database. Since the phylogenemic inference cannot be performed on the entire pangenome, we will instead only use gene clusters with significant variation (combined homogeneity < 0.75).
+~~~
 anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
+~~~
 
+**6.** After the pangenomic analysis is done and the homogeneity values have been computed, we can use the program **anvi-display-pan** to display the results.
+~~~
 anvi-display-pan -p PANGENOME-PAN.db -g STORAGE-GENOMES.db
+~~~
 
+*Optional*: Get a FASTA file with aligned and concatenated amino acid sequences corresponding to all gene clusters found in the pangenome. This is optional since we cannot build the phylogeny using all gene clusters (as the alignment size would be too enormous).
+~~~
+anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db --concatenate-gene-clusters -o concatenated-proteins.fa --max-num-genes-from-each-genome 1
+~~~
+
+*Optional*: Get the same FASTA file with non-concatenated amino acids.
+~~~
+anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -o genes.fa
+~~~
+
+**7.** Get a FASTA file with aligned and concatenated amino acid sequences corresponding to the selected gene clusters. This will be used to perform the phylogenomic analysis. We set the *--max-combined-homogeneity-index* to 0.75 to limit our selection to highly variable gene clusters (as they will have a bigger impact on the phylogeny than gene clusters with low variability). We also set the *genomes-gene-cluster-occurs* parameter to 32 as we have 32 genomes in the analysis and we want the gene clusters to be present in every genome.
+~~~
 anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db --concatenate-gene-clusters -o filtered-concatenated-proteins.fa --max-num-genes-from-each-genome 1 --min-num-genes-from-each-genome 1 --min-num-genomes-gene-cluster-occurs 32 --max-combined-homogeneity-index 0.75
+~~~
 
-#anvi-get-sequences-for-gene-clusters -g STORAGE-GENOMES.db -p PANGENOME-PAN.db -o genes.fa#
-
+**8.** Perform phylogenetic inference based on the previously generated FASTA file containing aligned and concatenated gene clusters of interest.
+~~~
 anvi-gen-phylogenomic-tree -f filtered-concatenated-proteins.fa -o tree.newick
+~~~
 
+**9.** Display the phylogenetic tree in the Anvi'o interactive interface.
+~~~
 anvi-interactive -p phylogenomic-profile.db -t tree.newick --title "Pangenome tree" --manual
+~~~
 
-# Adding more species
+## Adding more species
 Gluconobacter japonicus
 Gluconacetobacter diazotrophicus
 Gluconobacter liquefaciens
@@ -311,7 +357,12 @@ Asaia paltycody
 Kozaia baliensis
 
 
-# Single-copy core genes tree
+# April-May 2023 - Complementary plots
+
+G-C contents:
+for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[ATat]/,"")} END {print (gc/(gc+at))*100}' $file) ; echo "${file%.fa}:$gc" >> GC_contents.txt ; done
+
+# June 2023 - Single-copy core genes tree
 
 ...
 
