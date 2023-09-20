@@ -1,4 +1,4 @@
-![sccgtree-bs](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/a3f80e6c-f99c-4c98-a2db-1df375a07ee3)# Fermentation-bacteria
+# Fermentation-bacteria
 
 > The entire pipeline of this year-long project is unrolled here in detail.
 
