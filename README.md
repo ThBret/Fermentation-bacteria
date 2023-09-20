@@ -83,7 +83,7 @@ done
 - The output files are saved in a directory named *output*.
 
 ## 4) Quality filtering
-> After running the CheckM analysis on the server, output files are returned and saved in a directory named *output*. This folder is imported locally to filter the list of genomes based on the results of the completeness and contamination assessments. The filtering is performed by another custom Python script: *qa_filtering.py*.
+After running the CheckM analysis on the server, output files are returned and saved in a directory named *output*. This folder is imported locally to filter the list of genomes based on the results of the completeness and contamination assessments. The filtering is performed by another custom Python script: *qa_filtering.py*.
 
 ### qa_filtering.py
 ```python
