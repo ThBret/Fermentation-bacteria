@@ -1,26 +1,61 @@
 # Fermentation-bacteria
 
-The scripts used as part of this project are here described in order:
+The entire pipeline of this year-long project is unrolled here in detail.
 
-# Preprocessing and quality assessment
+# November-December 2022 - Preprocessing
 ## 1) Downloading the whole-genome sequences
-The whole-genome sequences are directly downloaded from NCBI, given a list of species of interest.
+The first step consists of downloading whole-genome sequences from the **National Center for Biotechnology Information (NCBI) database** given a list of species and genera of interest. We limit our selection to sequences provided by GenBank only in order to avoid inconsistencies.
 
 ## 2) Initialisation
-Custom script --> initialiser.py
-**Local**: *Used after downloading whole-genomes sequences from NCBI.*
+This step takes place right after downloading the genomes from NCBI; the code is run locally. Before proceeding to quality assessment, we must first move all the whole-genome sequences to a single directory, save all the information we have on each genome to an Excel log, and remove unnecessary files. The custom Python script below (*initialiser.py*) was written to do all of this.
 
-- Sets up the working directory.
-- Fills a **Pandas** dataframe with information on the genomes using the "data_summary.tsv" file present in the folder downloaded from **NCBI**.
-- The dataframe is filled with informations such as the organism qualifier, taxonomic ID, assembly name/accession, size, gene count, BioProject ID, BioSample ID, etc.
-- Removes unnecessary files.
-- Moves all the genome sequences to the bacterium-specific folder (removes unnecessary nested folders).
-- Saves the full bacteria log data as an **Excel** sheet --> "bacteria_log.xlsx"
+### initialiser.py
+```python
+import pandas as pd
+from tqdm import tqdm
+import os
 
+#prepare the working directory
+bacteria_log = pd.DataFrame()
+path = '/Users/thibaultbret/Genomes/'
+os.chdir(path)
+bacteria = [file for file in sorted(os.listdir(path)) if not file.startswith('.')]
+
+for bacterium in bacteria:
+    #select the working directory
+    path = '/Users/thibaultbret/Genomes/' + bacterium + '/'
+    os.chdir(path)
+    #fill the bacteria log dataframe using the "data_summary.tsv" file present in the folder downloaded from NCBI
+    info_df = pd.read_table('data_summary.tsv', usecols = [0,2,3,4,5,7,8,9,10,11,12,13,14]).rename(columns = {'Organism Scientific Name':'Organism'}).set_index('Organism')
+    bacteria_log = bacteria_log.append(info_df)
+    #remove unnecessary files
+    os.remove('dataset_catalog.json')
+    os.remove('assembly_data_report.jsonl')
+    #move all the genome sequences to the bacterium-specific folder
+    for elem in tqdm(os.listdir(path)):
+        if os.path.isdir(elem):
+            os.system('mv ' + elem + '/*.fna ' + path)
+            if os.path.exists(elem + '/sequence_report.jsonl'): os.remove(elem + '/sequence_report.jsonl')
+            os.rmdir(elem)
+
+#Save the full bacteria log data as an Excel sheet
+bacteria_log.index = [idx[0] + ' ' + idx[1] for idx in bacteria_log.index.str.split(' ')]
+bacteria_log.to_excel('/Users/thibaultbret/bacteria_log00.xlsx')
+```
+
+This script creates a directory named *Genomes* to store all the whole-genome sequences. Unnecessary files are removed. Additionally, the sequences are grouped in subfolders corresponding to their species. The script then fills a **Pandas** data frame with information on the genomes extracted from the "data_summary.tsv" file present in the original folders downloaded from **NCBI**. This includes the organism qualifier, the taxonomy ID, the assembly name, the assembly accession, the annotation level, the genome size, the submission date, the gene count, the corresponding BioProject and BioSample IDs, whether it is part of the lactic or the acetic bacterial family, and information on the isolation source (species, body part and country/region). Finally, the the full Pandas log data frame is exported as an **Excel** file named *bacteria_log.xlsx*
 
 ## 3) Quality assessment using [CheckM](https://github.com/Ecogenomics/CheckM)
-**Mjolnir**: *Used after exporting the whole-genome sequence files.*
 
+Once all the genome sequences have been downloaded and their information saved to the *bacteria_log.xlsx* Excel sheet, we can export them to the **Mjolnir** server with the following command:
+
+`scp -r /Users/thibaultbret/Genomes vhp327@mjolnirhead01fl.unicph.domain:/projects/mjolnir1/people/vhp327/`
+
+Now that the genome sequences are present on the server, we can proceed to the quality assessment. We will use **CheckM**, a set of tools already installed on the server that provides robust estimates of genome completeness and contamination. CheckM assumes by default that the genomes consist of contigs/scaffolds in FASTA format, which corresponds to the format of our files.
+
+I wrote a custom script to run a CheckM lineage analysis
+
+*qa.sh*
 ~~~
 #!/bin/sh
 #SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:00
