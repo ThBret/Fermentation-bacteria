@@ -55,7 +55,7 @@ Now that the genome sequences are present on the server, we can proceed to the q
 ### qa.sh
 ```bash
 #!/bin/sh
-#SBATCH -c 8 --mem 40G --output=qa_output.txt --time 14-0:00
+#SBATCH -c 8 --mem 4G --output=qa_output.txt --time 16:00:00
 module load checkm-genome/1.1.3
 p=/projects/mjolnir1/people/vhp327/new/
 cd $p
@@ -226,7 +226,6 @@ def get_most_complete_genomes(Acetic_or_Lactic = 'Acetic', data = 'Bacteria log 
     '''
     #make sure the path is the correct one
     if 'Python' in path: path = path.replace('Python','')
-
     #retrieve data to find the completeness of every genome
     bacteria_log = pd.read_excel(path + data)
     Acetic = bacteria_log[bacteria_log['Lactic/acetic'] == Acetic_or_Lactic]
@@ -236,22 +235,17 @@ def get_most_complete_genomes(Acetic_or_Lactic = 'Acetic', data = 'Bacteria log 
         to_drop = ['Gluconobacter albidus','Gluconobacter cerevisiae','Gluconobacter japonicus','Gluconobacter oxydans','Neokomagataea thailandica','Neokomagataea tanensis','Neokomagataea anthophila']
         rows_to_drop = most_complete_genomes.loc[to_drop].index
         most_complete_genomes.drop(rows_to_drop, inplace = True)
-
     #return the assembly accession of the most complete genomes without moving the files
     if Complete != True: return most_complete_genomes
-
     #get most complete genome files from the Acetic/Lactic directory
     bacteria = [file for file in sorted(os.listdir(path + Acetic_or_Lactic)) if not file.startswith('.')]
-
     #create new directory containing only the most complete genome per species
     if not os.path.exists(path + Acetic_or_Lactic + '_unique'): os.makedirs(path + Acetic_or_Lactic + '_unique')
-
     #move the most complete genome files to the new directory
     for bact in bacteria:
         for assemb in most_complete_genomes['Assembly Accession']:
             if bact.startswith(assemb):
                 shutil.copyfile(path + Acetic_or_Lactic + '/' + bact, path + '/' + Acetic_or_Lactic + '_unique/' + bact)
-
 
 if __name__ == "__main__":
     get_most_complete_genomes(data = 'bacteria_log2.xlsx', Complete = False, Strict = False)
@@ -267,12 +261,17 @@ After exporting the *Acetic_unique* directory to the **Mjolnir** server and whil
 ### prokka.sh
 ```bash
 #!/bin/sh
-#SBATCH -c 8 --mem 40G --output=Acetic.xmfa --time 14-0:0
+#SBATCH -c 8 --mem 1G --output=prokka_output.txt --time 12:00:00
 module load prokka/1.14
-p=/projects/mjolnir1/people/vhp327/Acetic_unique
+p=/projects/mjolnir1/people/vhp327/Acetic
 cd $p
-mkdir Acetic_unique_annotated
-for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_unique_annotated/"$tag"_prokka "$file"; done
+mkdir Acetic_annotated
+# 1) Prokka annotation
+for file in *.fna; do tag=${file%.fna}; prokka --prefix "$tag" --outdir Acetic_annotated --force $file ; done
+# 2) Delete unnecessary files
+for file in ${p}/Acetic_annotated/*; do
+    find ${file} ! -name '*.tsv' -type f -delete
+done
 ```
 
 **What is Prokka?**
@@ -365,8 +364,6 @@ for file in *.fa ; do gc=$(awk '/^>/ {next;} {gc+=gsub(/[GCgc]/,""); at+=gsub(/[
 # June 2023 - Single-copy core genes tree
 
 ...
-
-
 
 # July-August 2023 - New trees based on selected genes and pathways specific to acetic acid bacteria
 
