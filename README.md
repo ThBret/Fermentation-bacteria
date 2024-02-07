@@ -564,3 +564,12 @@ for seq in $(ls *.fa); do iqtree -s $seq -bb 1000 ; done
 The resulting trees are shown in the *pfamtrees-bs.pdf* file.
 
 
+## Automatically download new genomes using [NCBI datasets](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/download-and-install/)
+
+Using the NCBI datasets command line tool, new genomes can be downloaded automatically in a matter of minutes.
+
+```bash
+datasets download genome accession GCF_000010825.1 --include gff3,rna,cds,protein,genome,seq-report
+```
+
+Simply replace the accession with the ones corresponding to the genome you want to download.
