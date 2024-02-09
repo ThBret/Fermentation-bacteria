@@ -425,6 +425,8 @@ module load anvio/7.1
 # 1) Setup
 p=/projects/mjolnir1/people/vhp327/Acetic_all
 cd $p
+# Optionally migrate the Contigs databases if they are not up to date
+# anvi-migrate --migrate-safely *.db
 # 2) Run HMMs for 71 Bacteria copy core genes
 for file in $(ls *.db); do anvi-run-hmms -c $file -T 4 -I Bacteria_71 ; done
 # 3) Estimating metabolism
