@@ -575,3 +575,29 @@ datasets download genome accession GCF_000010825.1 --include gff3,rna,cds,protei
 ```
 
 Simply replace the accession with the ones corresponding to the genome you want to download.
+
+
+If you wanna easily download genome sequences only:
+```bash
+datasets download genome accession <accessions> --include genome
+```
+
+Then unzip the resulting zip file, rename the "data" folder to "FinalGenomes" and run
+
+```bash
+# Specify the source directory
+source_dir="FinalGenomes"
+
+# Move files ending with .fna to FinalGenomes directory
+for dir in "$source_dir"/*/; do
+    mv "$dir"*.fna "$source_dir"
+done
+
+# Remove empty directories
+find FinalGenomes -type d -empty -delete
+```
+
+If you need to rename the fasta files, run:
+```bash
+for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
+```
