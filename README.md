@@ -655,31 +655,38 @@ anvi-script-gen-user-module-file -I "AAB.txt" \
                   -e enzymes-list-for-module.txt
 ```
 
+
+### 5) Make modules database
+```bash
 mkdir AAB_METABOLISM && cd AAB_METABOLISM
 mkdir modules
 mv $p/AAB.txt modules
 cd ..
-
-
-# 4) Make modules database
 anvi-setup-user-modules --user-modules AAB_METABOLISM --kegg-data-dir ~/FinalTree/KEGG
+```
 
 
-# 5) Estimate metabolism
+# 6) Estimate metabolism
+```bash
 anvi-estimate-metabolism  -e external-genomes.txt \
                          --user-modules AAB_metabolism/ \
                          --only-user-modules \
                          -O AAB-metabolism-results \
                          --matrix-format
+```
 
 # 7) Visualise the result
+```bash
 anvi-interactive -d AAB-metabolism-results-enzyme_hits-MATRIX.txt \
                  -p AAB-metabolism-heatmap.db \
                  -t ALIGN.treefile \
                  --manual \
                  --title "AAB METABOLISM HEATMAP"
+```
 
 # 8) Further annotation
+```bash
 anvi-import-misc-data anvio-data.txt \
                          --target-data-table layers \
                          --pan-or-profile-db AAB-metabolism-heatmap.db
+```
