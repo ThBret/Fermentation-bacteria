@@ -666,7 +666,7 @@ anvi-setup-user-modules --user-modules AAB_METABOLISM --kegg-data-dir ~/FinalTre
 ```
 
 
-# 6) Estimate metabolism
+### 6) Estimate metabolism
 ```bash
 anvi-estimate-metabolism  -e external-genomes.txt \
                          --user-modules AAB_metabolism/ \
@@ -675,7 +675,7 @@ anvi-estimate-metabolism  -e external-genomes.txt \
                          --matrix-format
 ```
 
-# 7) Visualise the result
+### 7) Visualise the result
 ```bash
 anvi-interactive -d AAB-metabolism-results-enzyme_hits-MATRIX.txt \
                  -p AAB-metabolism-heatmap.db \
@@ -684,7 +684,7 @@ anvi-interactive -d AAB-metabolism-results-enzyme_hits-MATRIX.txt \
                  --title "AAB METABOLISM HEATMAP"
 ```
 
-# 8) Further annotation
+### 8) Further annotation
 ```bash
 anvi-import-misc-data anvio-data.txt \
                          --target-data-table layers \
