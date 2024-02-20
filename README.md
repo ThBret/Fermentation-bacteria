@@ -601,3 +601,85 @@ If you need to rename the fasta files, run:
 ```bash
 for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
 ```
+
+# Feburary 2024 - Metabolic analysis
+
+## Method 1 - general metabolic analysis
+
+```bash
+module load anvio/7.1
+
+# Setup
+p=/projects/mjolnir1/people/vhp327/FinalTree/
+cd $p
+
+# 1) Setting up KEGG data
+anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
+
+# 2) Annotating the genome with KOfam hits
+for file in $(ls *_CONTIGS.db); do anvi-run-kegg-kofams -c ${file} -T 4 --kegg-data-dir $p/KEGG ; done
+
+# 3) Estimating metabolism
+anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
+```
+
+## Method 2 - Tailored metabolic analysis
+
+### 1) Setting up KEGG data
+```bash
+p=/Users/thibaultbret/All-db
+cd $p
+anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
+```
+
+### 2) Generate Hidden Markov Models (HMMs) corresponding to each PFAM sequence
+```bash
+anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list "PF00005" "PF00196" "PF00923" "PF02887" "PF08240" "PF00118" "PF00330" "PF00958" "PF03070" "PF13243" "PF00171" "PF00465" "PF01161" "PF08042" "PF13360" -O HMM_AAB
+```
+
+### Optional - update databases if you have to
+```bash
+anvi-migrate --migrate-safely *.db
+```
+
+### 3) Annotate the genomes with PFAM hits
+```bash
+for file in $(ls *_CONTIGS.db); do anvi-run-hmms -c $file -H HMM_AAB --add-to-functions-table --just-do-it ; done
+```
+
+### 4) Generate a user-defined module file
+```bash
+anvi-script-gen-user-module-file -I "AAB.txt" \
+                  -n "Collection of 15 enzyme families present in AAB" \
+                  -c "User modules; Test set; AAB enzymes" \
+                  -e enzymes-list-for-module.txt
+```
+
+mkdir AAB_METABOLISM && cd AAB_METABOLISM
+mkdir modules
+mv $p/AAB.txt modules
+cd ..
+
+
+# 4) Make modules database
+anvi-setup-user-modules --user-modules AAB_METABOLISM --kegg-data-dir ~/FinalTree/KEGG
+
+
+# 5) Estimate metabolism
+anvi-estimate-metabolism  -e external-genomes.txt \
+                         --user-modules AAB_metabolism/ \
+                         --only-user-modules \
+                         -O AAB-metabolism-results \
+                         --matrix-format
+
+# 7) Visualise the result
+anvi-interactive -d AAB-metabolism-results-enzyme_hits-MATRIX.txt \
+                 -p AAB-metabolism-heatmap.db \
+                 -t ALIGN.treefile \
+                 --manual \
+                 --title "AAB METABOLISM HEATMAP"
+
+# 8) Further annotation
+anvi-import-misc-data anvio-data.txt \
+                         --target-data-table layers \
+                         --pan-or-profile-db AAB-metabolism-heatmap.db
