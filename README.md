@@ -604,9 +604,106 @@ for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
 
 # Feburary 2024 - Metabolic analysis
 
-## Method 1 - general metabolic analysis
+## Method 1 - Tailored metabolic analysis
 
-The aim here is to run the metabolic analysis without specifying enzymes or pathways of interest so that every factor is taken into consideration. This had to be run from the server as it is a very computational-heavy task.
+The aim here is to run the metabolic analysis with only a restricted amount of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programs in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains a folder named **ContigsDB** containing all the contigs databases we have been working with so far as well as the tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile").
+
+### 1) Setting up KEGG data
+The first step consists of defining the working directory and setting up a directory containing all the KEGG data.
+```bash
+p=/Users/thibaultbret/All-db
+cd $p
+anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
+```
+
+### 2) Generate Hidden Markov Models (HMMs) corresponding to each Pfam sequence
+Then we can create Hidden Markov Model directories corresponding to each Pfam sequence we are interested in. This Anvi'o script will generate this for us, we only need to provide it with a list of the Pfam accessions and a name for the output directory.
+```bash
+anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list "PF00005" "PF00196" "PF00923" "PF02887" "PF08240" "PF00118" "PF00330" "PF00958" "PF03070" "PF13243" "PF00171" "PF00465" "PF01161" "PF08042" "PF13360" -O HMM_AAB
+```
+
+### Optional - update databases if you have to
+It is sometimes necessary to migrate the CONTIGS databases if Anvi'o has been updated to a newer version.
+```bash
+anvi-migrate --migrate-safely ContigsDB/*_CONTIGS.db
+```
+
+### 3) Annotate the genomes with Pfam hits
+We can now annotate the genomes with Pfam hits based on the HMM directories we created earlier.
+```bash
+for file in $(ls ContigsDB/*_CONTIGS.db); do anvi-run-hmms -c $file -H HMM_AAB --add-to-functions-table --just-do-it ; done
+```
+
+### 4) Generate a user-defined module file
+We need to generate a module file outlining the enzymes we are conducting this analysis with, their HMM source and orthology. It should look as follows:
+enzymes-list-for-module.txt
+```bash
+enzyme	source	orthology
+PF00005	HMM_AAB	"ABC transporter"
+PF00196	HMM_AAB	"Bacterial regulatory proteins, luxR family"
+PF00923	HMM_AAB	"Transaldolase/Fructose-6-phosphate aldolase"
+PF02887	HMM_AAB	"Pyruvate kinase, alpha/beta domain"
+PF08240	HMM_AAB	"Alcohol dehydrogenase GroES-like domain"
+PF00118	HMM_AAB	"TCP-1/cpn60/GroEL chaperonin family"
+PF00330	HMM_AAB	"Aconitase family (aconitate hydratase)"
+PF00958	HMM_AAB	"GMP synthase C terminal domain"
+PF03070	HMM_AAB	"TENA/THI-4/PQQC family"
+PF13243	HMM_AAB	"Squalene-hopene cyclase C-terminal domain"
+PF00171	HMM_AAB	"Aldehyde dehydrogenase family"
+PF00465	HMM_AAB	"Iron-containing alcohol dehydrogenase"
+PF01161	HMM_AAB	"Phosphatidylethanolamine-binding protein"
+PF08042	HMM_AAB	"PqqA family"
+PF13360	HMM_AAB	"PQQ-like domain"
+```
+
+```bash
+anvi-script-gen-user-module-file -I "AAB.txt" \
+                  -n "Collection of 15 enzyme families present in AAB" \
+                  -c "User modules; Test set; AAB enzymes" \
+                  -e enzymes-list-for-module.txt
+```
+
+
+### 5) Make modules database
+Necessary steps before estimating metabolism.
+```bash
+mkdir AAB_METABOLISM && cd AAB_METABOLISM
+mkdir modules
+mv $p/AAB.txt modules
+cd ..
+anvi-setup-user-modules --user-modules AAB_METABOLISM --kegg-data-dir ~/FinalTree/KEGG
+```
+
+
+### 6) Estimate metabolism
+```bash
+anvi-estimate-metabolism  -e external-genomes.txt \
+                         --user-modules AAB_metabolism/ \
+                         --only-user-modules \
+                         -O AAB-metabolism-results \
+                         --matrix-format
+```
+
+### 7) Visualise the result
+The previous step will generate a file named "AAB-metabolism-results-enzyme_hits-MATRIX.txt". We could directly feed it into the next command and obtain a rough visual representation but to make sure that the heatmap includes as much information as possible, it is preferable to copy that data and transpose it into an Excel sheet. Then using previously calculated parameters such as GC content, CDS proportion, genome size and isolation source, this Excel file can serve as the basis for the heatmap. To feed it back into Anvi'o we first need to convert it back to a .txt file that we will name "AAB-metabolics-data.txt".
+
+Initiate the graph:
+```bash
+anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manual
+```
+
+### 8) Add the phylogenetic tree
+```bash
+anvi-import-items-order -i sccg-tree-noSRR.treefile \
+                        -p AAB-metabolism-heatmap.db \
+                        --name taxonomy
+
+anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manual
+```
+
+## Method 2 - general metabolic analysis
+
+The aim here is to run the metabolic analysis without first specifying enzymes or pathways of interest so that every factor can be taken into consideration. This script has to be run from the server as it is a very computationally heavy task. After setting the working directory, optionally migrating outdated databases and setting up a directory with the KEGG data, the first step is to annotate the genomes with KOfam hits like we did previously.
 
 <details>
   <summary><b>anvio-metabolics.sh</b> <i>(see code)</i></summary>
@@ -642,70 +739,5 @@ anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
 ```
 </details>
 
-## Method 2 - Tailored metabolic analysis
 
-### 1) Setting up KEGG data
-```bash
-p=/Users/thibaultbret/All-db
-cd $p
-anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
-```
-
-### 2) Generate Hidden Markov Models (HMMs) corresponding to each PFAM sequence
-```bash
-anvi-script-pfam-accessions-to-hmms-directory --pfam-accessions-list "PF00005" "PF00196" "PF00923" "PF02887" "PF08240" "PF00118" "PF00330" "PF00958" "PF03070" "PF13243" "PF00171" "PF00465" "PF01161" "PF08042" "PF13360" -O HMM_AAB
-```
-
-### Optional - update databases if you have to
-```bash
-anvi-migrate --migrate-safely *.db
-```
-
-### 3) Annotate the genomes with PFAM hits
-```bash
-for file in $(ls *_CONTIGS.db); do anvi-run-hmms -c $file -H HMM_AAB --add-to-functions-table --just-do-it ; done
-```
-
-### 4) Generate a user-defined module file
-```bash
-anvi-script-gen-user-module-file -I "AAB.txt" \
-                  -n "Collection of 15 enzyme families present in AAB" \
-                  -c "User modules; Test set; AAB enzymes" \
-                  -e enzymes-list-for-module.txt
-```
-
-
-### 5) Make modules database
-```bash
-mkdir AAB_METABOLISM && cd AAB_METABOLISM
-mkdir modules
-mv $p/AAB.txt modules
-cd ..
-anvi-setup-user-modules --user-modules AAB_METABOLISM --kegg-data-dir ~/FinalTree/KEGG
-```
-
-
-### 6) Estimate metabolism
-```bash
-anvi-estimate-metabolism  -e external-genomes.txt \
-                         --user-modules AAB_metabolism/ \
-                         --only-user-modules \
-                         -O AAB-metabolism-results \
-                         --matrix-format
-```
-
-### 7) Visualise the result
-```bash
-anvi-interactive -d AAB-metabolism-results-enzyme_hits-MATRIX.txt \
-                 -p AAB-metabolism-heatmap.db \
-                 -t ALIGN.treefile \
-                 --manual \
-                 --title "AAB METABOLISM HEATMAP"
-```
-
-### 8) Further annotation
-```bash
-anvi-import-misc-data anvio-data.txt \
-                         --target-data-table layers \
-                         --pan-or-profile-db AAB-metabolism-heatmap.db
 ```
