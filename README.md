@@ -735,7 +735,6 @@ for file in $(ls ContigsDB/*_CONTIGS.db); do
     anvi-run-kegg-kofams -c ${file} -T 4 --kegg-data-dir $p/KEGG
 done
 
-
 # 3) Estimating metabolism (pick preferred output format)
 #anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
 anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
