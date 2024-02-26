@@ -740,8 +740,9 @@ done
 #anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
 anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
 ```
+
 </details>
-```
+
 
 Running the **anvi-estimate-metabolism** with default setting will return a file named "kegg-metabolism_modules.txt". This file can be used as the input for a very import command called **anvi-compute-metabolic-enrichment** which will compute an enrichment score and a list of associated groups for each module that is present in at least one genome (modules are considered ‘present’ in a genome if they have a high enough completeness score in that genome). It also requires a text file that will describe the groups between which we want to separate the genomes. It should look like the following:
 
