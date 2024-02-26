@@ -701,6 +701,10 @@ anvi-import-items-order -i sccg-tree-noSRR.treefile \
 anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manual
 ```
 
+The result:
+[Metabolics-heatmap-noSRR.pdf](https://github.com/THibaultBret/Fermentation-bacteria/files/14403414/Metabolics-heatmap-noSRR.pdf)
+
+
 ## Method 2 - general metabolic analysis
 
 The aim here is to run the metabolic analysis without first specifying enzymes or pathways of interest so that every factor can be taken into consideration. This script has to be run from the server as it is a very computationally heavy task. After setting the working directory, optionally migrating outdated databases and setting up a directory with the KEGG data, the first step is to annotate the genomes with KOfam hits like we did previously.
