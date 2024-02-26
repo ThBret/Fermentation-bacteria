@@ -606,22 +606,41 @@ for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
 
 ## Method 1 - general metabolic analysis
 
+The aim here is to run the metabolic analysis without specifying enzymes or pathways of interest so that every factor is taken into consideration. This had to be run from the server as it is a very computational-heavy task.
+
+<details>
+  <summary><b>anvio-metabolics.sh</b> <i>(see code)</i></summary>
+
 ```bash
-module load anvio/7.1
+#!/bin/sh
+#SBATCH -c 8 --mem 4G --output=output_anvio.txt --time 2-00:00:00 --mail-user=thibault.bret@sund.ku.dk --mail-type=ALL
+module load anvio
+module load anvio-dev
 
 # Setup
 p=/projects/mjolnir1/people/vhp327/FinalTree/
 cd $p
 
-# 1) Setting up KEGG data
-anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
+# Optionally migrate outdated databases
+#anvi-migrate --migrate-safely *_CONTIGS.db
+#anvi-migrate --migrate-safely KEGG/MODULES.db
+
+# 1) Set up KEGG data if not done already
+#anvi-setup-kegg-kofams --kegg-data-dir $p/KEGG
 
 # 2) Annotating the genome with KOfam hits
-for file in $(ls *_CONTIGS.db); do anvi-run-kegg-kofams -c ${file} -T 4 --kegg-data-dir $p/KEGG ; done
+for file in $(ls ContigsDB/*_CONTIGS.db); do
+    anvi-run-kegg-kofams -c ${file} -T 4 --kegg-data-dir $p/KEGG
+done
+
 
 # 3) Estimating metabolism
-anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
+# 2 possibilities - matrix-format output is useful if you want to individually look at the genomes and what pathways/enzymes are associated
+# with them while the default output format is necessary to later run the enrichment analysis
+# anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
+anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
 ```
+</details>
 
 ## Method 2 - Tailored metabolic analysis
 
