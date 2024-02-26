@@ -702,7 +702,7 @@ anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manua
 ```
 
 The result:
-[Metabolics-heatmap-noSRR.pdf](https://github.com/THibaultBret/Fermentation-bacteria/files/14403414/Metabolics-heatmap-noSRR.pdf)
+![metabolics-heatmap](https://github.com/THibaultBret/Fermentation-bacteria/files/14403414/Metabolics-heatmap-noSRR.pdf)
 
 
 ## Method 2 - general metabolic analysis
