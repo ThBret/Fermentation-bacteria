@@ -606,7 +606,7 @@ for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
 
 ## Method 1 - Tailored metabolic analysis
 
-The aim here is to run the metabolic analysis with only a restricted amount of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programs in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains a folder named **ContigsDB** containing all the contigs databases we have been working with so far as well as the tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile").
+The aim here is to run the metabolic analysis with only a restricted set of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programs in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains a folder named **ContigsDB** containing all the contigs databases we have been working with so far as well as the tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile").
 
 ### 1) Setting up KEGG data
 The first step consists of defining the working directory and setting up a directory containing all the KEGG data.
