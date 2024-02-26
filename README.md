@@ -767,3 +767,10 @@ anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -G groups.txt \
                                   -o functional-enrichment.txt
 ```
+
+
+# February-March 2024 - Time scaled phylogeny & concordance factors
+
+Our single-copy core gene trees are already informative but one thing we can add is a time scale. A time scale can provide a rough chronology of the splits in the tree and potentially corroborate with existing hypotheses. To generate a time scale we first have to calibrate it based on pre-existing knowledge. We can give it two nodes of the tree 
+
+
