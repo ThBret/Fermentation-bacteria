@@ -604,7 +604,7 @@ for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
 
 # February 2024 - Metabolic analysis
 
-## Method 1 - Tailored metabolic analysis
+## Method 1 - Restricted metabolic analysis
 
 The aim here is to run the metabolic analysis with only a restricted set of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programs in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains our tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile") as well as a folder named **ContigsDB** containing all the contigs databases we have been working with so far.
 
@@ -706,9 +706,9 @@ The result:
 ![Metabolics-heatmap-noSRR](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/852ed5d9-400f-4879-848f-76371dcabe89)
 
 
-## Method 2 - general metabolic analysis
+## Method 2 - Full metabolic analysis
 
-The aim here is to run the metabolic analysis without first specifying enzymes or pathways of interest so that every factor can be taken into consideration. This script has to be run from the server as it is a very computationally heavy task. After setting the working directory, optionally migrating outdated databases and setting up a directory with the KEGG data, the first step is to annotate the genomes with KOfam hits like we did previously.
+The aim here is to run the metabolic analysis without first specifying enzymes or pathways of interest so that every factor can be taken into consideration. This script has to be run from the server as it is a very computationally heavy task. After setting the working directory, optionally migrating outdated databases and setting up a directory with the KEGG data, the first step is to annotate the genomes with KOfam hits, which takes between 5 and 15 minutes for each contigs database. Once this is done for all 154 genomes, we can run the **anvi-estimate-metabolism** Anvi'o command which can either return a "matrix-format" output which is useful if we want to determine which pathways/enzymes are associated with a given genome, but it's a lot of information, or we can leave it to the default output format, which may be less interesting to look at but is necessary to later run the enrichment analysis.
 
 <details>
   <summary><b>anvio-metabolics.sh</b> <i>(see code)</i></summary>
@@ -736,13 +736,34 @@ for file in $(ls ContigsDB/*_CONTIGS.db); do
 done
 
 
-# 3) Estimating metabolism
-# 2 possibilities - matrix-format output is useful if you want to individually look at the genomes and what pathways/enzymes are associated
-# with them while the default output format is necessary to later run the enrichment analysis
-# anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
+# 3) Estimating metabolism (pick preferred output format)
+#anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG --matrix-format --include-metadata
 anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
 ```
 </details>
+```
 
+Running the **anvi-estimate-metabolism** with default setting will return a file named "kegg-metabolism_modules.txt". This file can be used as the input for a very import command called **anvi-compute-metabolic-enrichment** which will compute an enrichment score and a list of associated groups for each module that is present in at least one genome (modules are considered ‘present’ in a genome if they have a high enough completeness score in that genome). It also requires a text file that will describe the groups between which we want to separate the genomes. It should look like the following:
 
+```bash
+item	group
+Acetobacter_ascendens	Ferment
+Acetobacter_cibinongensis	Plant
+Acetobacter_conturbans	Ferment
+Acetobacter_fallax	Ferment
+Acetobacter_farinalis	Ferment
+Acetobacter_garciniae	Ferment
+Acetobacter_ghanensis	Ferment
+Acetobacter_lambici	Ferment
+Acetobacter_lovaniensis	Plant
+Acetobacter_malorum	Ferment
+...
+```
+
+We can finally run the following command, either on the server or in the **anvio-dev** conda environment:
+
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups.txt \
+                                  -o functional-enrichment.txt
 ```
