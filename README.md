@@ -696,13 +696,14 @@ anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manua
 ```bash
 anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-metabolism-heatmap.db \
+
                         --name taxonomy
 
 anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manual
 ```
 
 The result:
-![metabolics-heatmap](https://github.com/THibaultBret/Fermentation-bacteria/files/14403414/Metabolics-heatmap-noSRR.pdf)
+![Metabolics-heatmap-noSRR](https://github.com/THibaultBret/Fermentation-bacteria/assets/90853477/852ed5d9-400f-4879-848f-76371dcabe89)
 
 
 ## Method 2 - general metabolic analysis
