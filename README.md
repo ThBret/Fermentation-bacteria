@@ -599,7 +599,7 @@ find FinalGenomes -type d -empty -delete
 
 If you need to rename the fasta files, run:
 ```bash
-for file in *.fna; do mv "$file" "${file%.fa}.fasta"; done
+for file in *.fna; do mv "$file" "${file%.fna}.fasta"; done
 ```
 
 # February 2024 - Metabolic analysis
