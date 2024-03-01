@@ -696,7 +696,6 @@ anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manua
 ```bash
 anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-metabolism-heatmap.db \
-
                         --name taxonomy
 
 anvi-interactive -d AAB-metabolics-data.txt -p AAB-metabolism-heatmap.db --manual
@@ -742,7 +741,6 @@ anvi-estimate-metabolism -e external-genomes.txt --kegg-data-dir $p/KEGG
 
 </details>
 
-
 Running the **anvi-estimate-metabolism** with default setting will return a file named "kegg-metabolism_modules.txt". This file can be used as the input for a very import command called **anvi-compute-metabolic-enrichment** which will compute an enrichment score and a list of associated groups for each module that is present in at least one genome (modules are considered ‘present’ in a genome if they have a high enough completeness score in that genome). It also requires a text file that will describe the groups between which we want to separate the genomes. It should look like the following:
 
 ```bash
@@ -768,6 +766,23 @@ anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -o functional-enrichment.txt
 ```
 
+### Visualise the result
+Now based on the pathways that are significantly enriched in a group of set of groups compared to others, we can generate a new heatmap that will be much more informative.
+We need the "AAB-metabolism-results-enzyme_hits-MATRIX.txt" returned by the "anvi-estimate-metabolism" command with the "--matrix-format" and "include-metadata" settings. Again for better visualisation, it is preferable to copy that data and transpose it into an Excel sheet. Then using previously calculated parameters such as GC content, CDS proportion, genome size and isolation source, this Excel file can serve as the basis for the heatmap. To feed it back into Anvi'o we first need to convert it back to a .txt file that we will name "AAB-full-KEGG-data.txt".
+
+Initiate the graph:
+```bash
+anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
+```
+
+### Add the phylogenetic tree
+```bash
+anvi-import-items-order -i sccg-tree-noSRR.treefile \
+                        -p AAB-full-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
+```
 
 # February-March 2024 - Time scaled phylogeny & concordance factors
 
