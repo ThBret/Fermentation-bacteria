@@ -791,7 +791,7 @@ anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-full-KEGG-heatmap.db \
                         --name taxonomy
 
-anvi-import-collection --bins-info collection.txt
+anvi-import-collection gengroups.txt -p AAB-full-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
 
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
