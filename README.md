@@ -760,10 +760,20 @@ Acetobacter_malorum	Ferment
 
 We can finally run the following command, either on the server or in the **anvio-dev** conda environment:
 
+Run the enrichment analysis based on isolation source groups:
+
 ```bash
 anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
-                                  -G groups.txt \
-                                  -o functional-enrichment.txt
+                                  -G groups-isolation.txt \
+                                  -o functional-enrichment-isolation-groups.txt
+```
+
+Run the enrichment analysis based on genus groups:
+
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups-genus.txt \
+                                  -o functional-enrichment-genus-groups.txt
 ```
 
 ### Visualise the result
