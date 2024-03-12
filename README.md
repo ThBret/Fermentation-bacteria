@@ -785,11 +785,13 @@ Initiate the graph:
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
-### Add the phylogenetic tree
+### Add the phylogenetic tree & custom bins
 ```bash
 anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-full-KEGG-heatmap.db \
                         --name taxonomy
+
+anvi-import-collection --bins-info collection.txt
 
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
