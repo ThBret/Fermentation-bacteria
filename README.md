@@ -785,14 +785,32 @@ Initiate the graph:
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
-### Add the phylogenetic tree & custom bins
+### Sort metabolic pathways & add custom bins
 ```bash
-anvi-import-items-order -i sccg-tree-noSRR.treefile \
-                        -p AAB-full-KEGG-heatmap.db \
-                        --name taxonomy
+# Cluster the pathways so that metabolisms with similar distributions across MAGs will be closer together
+anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX.txt -o module_organisation.newick
 
+# Cluster the genomes according to their metabolic capacity, so that MAGs with similar capacities will be closer together
+anvi-script-transpose-matrix kegg-metabolism-module_pathwise_completeness-MATRIX.txt -o kegg-metabolism-module_pathwise_completeness-MATRIX-TRANSPOSED.txt
+anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX-TRANSPOSED.txt -o mag_organisation.newick
+
+# Now we have two dendrograms, one for each side of the heatmap. Let’s add them to the display by importing them into the profile database
+anvi-import-items-order -i module_organisation.newick \
+                        -p AAB-full-KEGG-heatmap.db \
+                        --name module_organisation
+
+# Layer orders have to be imported into the database using anvi-import-misc-data, which requires copying the tree into a tab-delimited file that also describes the name and type of the ordering.
+TREE=$(cat mag_organisation.newick)  # copy the dendrogram into a variable called 'TREE'
+echo -e "item_name\tdata_type\tdata_value\nmag_organisation\tnewick\t$TREE" > layer_order.txt # put it into a file
+# import into the database
+anvi-import-misc-data -p AAB-full-KEGG-heatmap.db \
+                      -t layer_orders \
+                      layer_order.txt
+
+# Import custom bins
 anvi-import-collection gengroups.txt -p AAB-full-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
 
+# Show the figure
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
