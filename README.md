@@ -782,7 +782,7 @@ We need the "AAB-metabolism-results-enzyme_hits-MATRIX.txt" returned by the "anv
 
 Initiate the graph:
 ```bash
-anvi-interactive -d kegg-metabolism-module_pathwise_completeness-MATRIX -p AAB-full-KEGG-heatmap.db --manual
+anvi-interactive -d kegg-metabolism-module_pathwise_completeness-MATRIX.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
 ### Sort metabolic pathways & add custom bins
@@ -811,7 +811,7 @@ anvi-import-misc-data -p AAB-full-KEGG-heatmap.db \
 anvi-import-collection gengroups.txt -p AAB-full-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
 
 # Show the figure
-anvi-interactive -d kegg-metabolism-module_pathwise_completeness-MATRIX -p AAB-full-KEGG-heatmap.db --manual
+anvi-interactive -d kegg-metabolism-module_pathwise_completeness-MATRIX.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
 
