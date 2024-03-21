@@ -796,6 +796,39 @@ anvi-import-collection gengroups.txt -p AAB-full-KEGG-heatmap.db -C gengroups --
 anvi-interactive -d AAB-full-KEGG-data.txt -p AAB-full-KEGG-heatmap.db --manual
 ```
 
+
+
+### Only looking at pathways enriched in certain genera
+```bash
+anvi-interactive -d AAB-genus-KEGG-data.txt -p AAB-genus-KEGG-heatmap.db --manual
+```
+
+```bash
+anvi-import-items-order -i sccg-tree-noSRR.treefile \
+                        -p AAB-genus-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-import-collection gengroups.txt -p AAB-genus-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
+
+anvi-interactive -d AAB-genus-KEGG-data.txt -p AAB-genus-KEGG-heatmap.db --manual
+```
+
+### Only looking at pathways enriched in certain isolation groups
+```bash
+anvi-interactive -d AAB-isolation-KEGG-data.txt -p AAB-isolation-KEGG-heatmap.db --manual
+```
+
+```bash
+anvi-import-items-order -i sccg-tree-noSRR.treefile \
+                        -p AAB-isolation-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-import-collection gengroups.txt -p AAB-isolation-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
+
+anvi-interactive -d AAB-isolation-KEGG-data.txt -p AAB-isolation-KEGG-heatmap.db --manual
+```
+
+
 # February-March 2024 - Time scaled phylogeny & concordance factors
 
 Our single-copy core gene trees are already informative but one thing we can add is a time scale. A time scale can provide a rough chronology of the splits in the tree and potentially corroborate with existing hypotheses. To generate a time scale we first have to calibrate it based on pre-existing knowledge. We can give it two nodes of the tree .
