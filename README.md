@@ -828,6 +828,8 @@ anvi-import-items-order -i sccg-tree-noSRR.treefile \
 
 anvi-import-collection gengroups.txt -p AAB-genus-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
 
+anvi-import-state -p AAB-genus-KEGG-heatmap.db -s state -n default
+
 anvi-interactive -d AAB-genus-KEGG-data.txt -p AAB-genus-KEGG-heatmap.db --manual
 ```
 
@@ -840,6 +842,8 @@ anvi-interactive -d AAB-isolation-KEGG-data.txt -p AAB-isolation-KEGG-heatmap.db
 anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-isolation-KEGG-heatmap.db \
                         --name taxonomy
+
+anvi-import-state -p AAB-isolation-KEGG-heatmap.db -s state -n default
 
 anvi-import-collection gengroups.txt -p AAB-isolation-KEGG-heatmap.db -C gengroups --bins-info bins-info.txt
 
