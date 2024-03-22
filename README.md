@@ -788,20 +788,20 @@ anvi-interactive -d kegg-metabolism-module_pathwise_completeness-MATRIX.txt -p A
 ### Sort metabolic pathways & add custom bins
 ```bash
 # Cluster the pathways so that metabolisms with similar distributions across MAGs will be closer together
-anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX.txt -o module_organisation.newick
+anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX.txt -o module_organization.newick
 
 # Cluster the genomes according to their metabolic capacity, so that MAGs with similar capacities will be closer together
 anvi-script-transpose-matrix kegg-metabolism-module_pathwise_completeness-MATRIX.txt -o kegg-metabolism-module_pathwise_completeness-MATRIX-TRANSPOSED.txt
-anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX-TRANSPOSED.txt -o mag_organisation.newick
+anvi-matrix-to-newick kegg-metabolism-module_pathwise_completeness-MATRIX-TRANSPOSED.txt -o mag_organization.newick
 
 # Now we have two dendrograms, one for each side of the heatmap. Let’s add them to the display by importing them into the profile database
-anvi-import-items-order -i module_organisation.newick \
+anvi-import-items-order -i module_organization.newick \
                         -p AAB-full-KEGG-heatmap.db \
-                        --name module_organisation
+                        --name module_organization
 
 # Layer orders have to be imported into the database using anvi-import-misc-data, which requires copying the tree into a tab-delimited file that also describes the name and type of the ordering.
-TREE=$(cat mag_organisation.newick)  # copy the dendrogram into a variable called 'TREE'
-echo -e "item_name\tdata_type\tdata_value\nmag_organisation\tnewick\t$TREE" > layer_order.txt # put it into a file
+TREE=$(cat mag_organization.newick)  # copy the dendrogram into a variable called 'TREE'
+echo -e "item_name\tdata_type\tdata_value\nmag_organization\tnewick\t$TREE" > layer_order.txt # put it into a file
 # import into the database
 anvi-import-misc-data -p AAB-full-KEGG-heatmap.db \
                       -t layer_orders \
