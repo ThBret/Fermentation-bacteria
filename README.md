@@ -855,4 +855,10 @@ anvi-interactive -d AAB-isolation-KEGG-data.txt -p AAB-isolation-KEGG-heatmap.db
 
 Our single-copy core gene trees are already informative but one thing we can add is a time scale. A time scale can provide a rough chronology of the splits in the tree and potentially corroborate with existing hypotheses. To generate a time scale we first have to calibrate it based on pre-existing knowledge. We can give it two nodes of the tree .
 
+1. Convert the alignment file in Nexus format: http://phylogeny.lirmm.fr/phylo_cgi/data_converter.cgi
+2. Load the Nexus alignment file into BEAUti
+3. Save as .xml format
+4. Launch BEAST and open the .xml alignment file
+5. Run the tree construction 
+
 
