@@ -861,6 +861,13 @@ Following this tutorial (time-calibrated tree beast)
 2. Load the Nexus alignment file into BEAUti
 3. Save as .xml format
 4. Launch BEAST and open the .xml alignment file
-5. Run the tree construction 
+5. Run the tree construction
+6. 
+
+
+Concordance factors:
+```bash
+iqtree -t FinalTree/ALIGN-noSRR.treefile -s FinalTree/ALIGN-noSRR --scf 100 --prefix concord -T 4
+```
 
 
