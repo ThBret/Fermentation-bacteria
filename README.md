@@ -867,7 +867,7 @@ Following this tutorial (time-calibrated tree beast)
 
 Concordance factors:
 ```bash
-iqtree -t FinalTree/ALIGN-noSRR.treefile -s FinalTree/ALIGN-noSRR --scf 100 --prefix concord -T 4
+./iqtree2 -te FinalTree/sccg-tree-noSRR.treefile -s FinalTree/ALIGN-noSRR --scfl 100 --prefix concord -m LG+F+R5 -o Roseomonas_mucosa,Acidocella_aromatica -T 4
 ```
 
 
