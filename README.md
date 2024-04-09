@@ -875,6 +875,7 @@ Concordance factors:
 
 ## Comparing Komagateibacter clade Vs Gluconacetobacter clade
 
+In R:
 ```R
 library(TreeTools)
 tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
@@ -885,6 +886,7 @@ getMRCA(tree, c("Nguyenibacter_sp","Novacetimonas_pomaceti")) # node 139
 write.tree(Subtree(tree, 139), "Komagateibacter-Gluconacetobacter-tree.treefile", keep.edge.length = TRUE)
 ```
 
+In the anvio-dev Conda environment:
 ```bash
 anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -G groups-Komagateibacter_vs_Gluconacetobacter.txt \
@@ -904,6 +906,7 @@ anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AA
 
 ## Comparing Bombella, Gluconobacter and Neokomagatea clade Vs other genomes
 
+In the anvio-dev Conda environment:
 ```bash
 anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -G groups-BombeGluconoNeoko_vs_others.txt \
@@ -923,6 +926,7 @@ anvi-interactive -d AAB-KEGG-data-BombeGluconoNeoko_vs_others.txt -p AAB-BombeGl
 ```
 
 ## Comparing Acetobacter clades Vs Gluconobacter Neokomagatea clade
+In R:
 ```R
 library(TreeTools)
 tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
@@ -939,6 +943,7 @@ subtree <- drop.tip(subtree, c("Bombella_apis","Bombella_dulcis","Bombella_favor
 write.tree(subtree, "/Users/thibaultbret/AcetoGluconoNeoko-tree.treefile")
 ```
 
+In the anvio-dev Conda environment:
 ```bash
 anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -G groups-Aceto_vs_GluconoNeoko.txt \
