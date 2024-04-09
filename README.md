@@ -871,3 +871,87 @@ Concordance factors:
 ```
 
 
+# April 2024 - Subgroup metabolic enrichment comparisons
+
+## Comparing Komagateibacter clade Vs Gluconacetobacter clade
+
+```R
+library(TreeTools)
+tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
+tree <- Preorder(tree)
+getMRCA(tree, c("Nguyenibacter_sp","Novacetimonas_pomaceti")) # node 139
+
+# Make a subset of the tree corresponding only to clades of interest
+write.tree(Subtree(tree, 139), "Komagateibacter-Gluconacetobacter-tree.treefile", keep.edge.length = TRUE)
+```
+
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups-Komagateibacter_vs_Gluconacetobacter.txt \
+                                  -o functional-enrichment-Komagateibacter_vs_Gluconacetobacter.txt
+
+anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db --manual
+
+anvi-import-state -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db -s state -n default
+
+anvi-import-items-order -i Komagateibacter-Gluconacetobacter-tree.treefile \
+                        -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db --manual
+```
+
+
+## Comparing Bombella, Gluconobacter and Neokomagatea clade Vs other genomes
+
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups-BombeGluconoNeoko_vs_others.txt \
+                                  -o functional-enrichment-BombeGluconoNeoko_vs_others.txt
+
+anvi-interactive -d AAB-KEGG-data-BombeGluconoNeoko_vs_others.txt -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db --manual
+
+anvi-import-state -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db -s state -n default
+
+anvi-import-items-order -i sccg-tree-noSRR.treefile \
+                        -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db \
+                        --name taxonomy
+
+tail -n +2 groups-BombeGluconoNeoko_vs_others.txt > tmp.txt && anvi-import-collection -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db -C groups tmp.txt && rm tmp.txt
+
+anvi-interactive -d AAB-KEGG-data-BombeGluconoNeoko_vs_others.txt -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db --manual
+```
+
+## Comparing Acetobacter clades Vs Gluconobacter Neokomagatea clade
+```R
+library(TreeTools)
+tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
+tree <- Preorder(tree)
+getMRCA(tree, c("Acetobacter_tropicalis","Gluconobacter_wancherniae")) # node 170
+# Make a subset of the tree corresponding only to clades of interest
+subtree <- Subtree(tree, 170)
+subtree <- drop.tip(subtree, c("Bombella_apis","Bombella_dulcis","Bombella_favorum","Bombella_intestini","Bombella_mellum","Bombella_pluederhausensis","Bombella_pollinis",
+                    "Bombella_saccharophila","Bombella_sp","Formicincola_oecophyllae","Oecophyllibacter_saccharovorans","Aristophania_vespae","Acetobacteraceae_bacterium_ESL0697",
+                    "Parasaccharibacter_apium","Saccharibacter_floricola","Saccharibacter_sp","Asaia_sp","Kozakia_baliensis","Swaminathania_salitolerans","Asaia_astilbis",
+                    "Asaia_bogorensis","Asaia_krungthepensis","Asaia_lannensis","Asaia_platycodi","Asaia_siamensis","Asaia_spathodeae","Acidomonas_methanolica","Neoasaia_chiangmaiensis",
+                    "Ameyamaea_chiangmaiensis","Parasaccharibacter_apium"))
+
+write.tree(subtree, "/Users/thibaultbret/AcetoGluconoNeoko-tree.treefile")
+```
+
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups-Aceto_vs_GluconoNeoko.txt \
+                                  -o functional-enrichment-Aceto_vs_GluconoNeoko.txt
+
+
+anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt-p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+
+anvi-import-state -p Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n default
+
+anvi-import-items-order -i Aceto_vs_GluconoNeoko-tree.treefile \
+                        -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt-p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+```
