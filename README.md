@@ -920,6 +920,8 @@ anvi-import-items-order -i sccg-tree-noSRR.treefile \
                         -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db \
                         --name taxonomy
 
+anvi-import-items-order -i layer-order-BombeGluconoNeoko_vs_others.txt -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db
+
 tail -n +2 groups-BombeGluconoNeoko_vs_others.txt > tmp.txt && anvi-import-collection -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db -C groups tmp.txt && rm tmp.txt
 
 anvi-interactive -d AAB-KEGG-data-BombeGluconoNeoko_vs_others.txt -p AAB-BombeGluconoNeoko_vs_others-KEGG-heatmap.db --manual
