@@ -954,13 +954,13 @@ anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
 
 anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
 
-anvi-import-state -p Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n default
+anvi-import-state -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n default
 
 anvi-import-items-order -i Aceto_vs_GluconoNeoko-tree.treefile \
-                        -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db \
-                        --name taxonomy
+                        -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db \
+                        --name taxonomy2
 
-anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt-p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
 ```
 
 
