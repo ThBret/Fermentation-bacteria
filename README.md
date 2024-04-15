@@ -958,7 +958,7 @@ anvi-import-state -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n defau
 
 anvi-import-items-order -i Aceto_vs_GluconoNeoko-tree.treefile \
                         -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db \
-                        --name taxonomy2
+                        --name taxonomy
 
 anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
 ```
