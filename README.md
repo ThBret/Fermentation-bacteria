@@ -952,7 +952,7 @@ anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
                                   -o functional-enrichment-Aceto_vs_GluconoNeoko.txt
 
 
-anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt-p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
 
 anvi-import-state -p Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n default
 
