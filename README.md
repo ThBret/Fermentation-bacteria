@@ -903,6 +903,36 @@ anvi-import-items-order -i Komagateibacter-Gluconacetobacter-tree.treefile \
 anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db --manual
 ```
 
+## Comparing Bombella clade Vs Commensalibacter clade
+
+In R:
+```R
+library(TreeTools)
+tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
+tree <- Preorder(tree)
+getMRCA(tree, c("Nguyenibacter_sp","Novacetimonas_pomaceti")) # node 139
+
+# Make a subset of the tree corresponding only to clades of interest
+write.tree(Subtree(tree, 139), "Komagateibacter-Gluconacetobacter-tree.treefile", keep.edge.length = TRUE)
+```
+
+In the anvio-dev Conda environment:
+```bash
+anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
+                                  -G groups-Komagateibacter_vs_Gluconacetobacter.txt \
+                                  -o functional-enrichment-Komagateibacter_vs_Gluconacetobacter.txt
+
+anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db --manual
+
+anvi-import-state -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db -s state -n default
+
+anvi-import-items-order -i Komagateibacter-Gluconacetobacter-tree.treefile \
+                        -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db \
+                        --name taxonomy
+
+anvi-interactive -d AAB-KEGG-data-Komagateibacter_vs_Gluconacetobacter.txt -p AAB-Komagateibacter_vs_Gluconacetobacter-KEGG-heatmap.db --manual
+```
+
 
 ## Comparing Bombella, Gluconobacter and Neokomagatea clade Vs other genomes
 
@@ -933,34 +963,37 @@ In R:
 library(TreeTools)
 tree <- read.tree("/Users/thibaultbret/Documents/Work/sccg-tree-noSRR.treefile")
 tree <- Preorder(tree)
-getMRCA(tree, c("Acetobacter_tropicalis","Gluconobacter_wancherniae")) # node 170
-# Make a subset of the tree corresponding only to clades of interest
-subtree <- Subtree(tree, 170)
-subtree <- drop.tip(subtree, c("Bombella_apis","Bombella_dulcis","Bombella_favorum","Bombella_intestini","Bombella_mellum","Bombella_pluederhausensis","Bombella_pollinis",
-                    "Bombella_saccharophila","Bombella_sp","Formicincola_oecophyllae","Oecophyllibacter_saccharovorans","Aristophania_vespae","Acetobacteraceae_bacterium_ESL0697",
-                    "Parasaccharibacter_apium","Saccharibacter_floricola","Saccharibacter_sp","Asaia_sp","Kozakia_baliensis","Swaminathania_salitolerans","Asaia_astilbis",
-                    "Asaia_bogorensis","Asaia_krungthepensis","Asaia_lannensis","Asaia_platycodi","Asaia_siamensis","Asaia_spathodeae","Acidomonas_methanolica","Neoasaia_chiangmaiensis",
-                    "Ameyamaea_chiangmaiensis","Parasaccharibacter_apium"))
+getMRCA(tree, c("Entomobacter_blattae","Bombella_mellum")) # node 138
+subtree <- Subtree(tree, 138)
+subtree <- drop.tip(subtree, c("Gluconobacter_kanchanaburiensis","Gluconobacter_cerevisiae","Gluconobacter_kondonii","Gluconobacter_cadivus","Gluconobacter_albidus","Gluconobacter_sphaericus","Gluconobacter_aidae","Gluconobacter_sp","Gluconobacter_oxydans","Gluconobacter_potus","Gluconobacter_roseus","Gluconobacter_vitians",
+                               "Gluconobacter_morbifer","Gluconobacter_thailandicus","Gluconobacter_frateurii","Gluconobacter_japonicus","Gluconobacter_cerinus","Neokomagataea_tanensis","Neokomagataea_thailandica","Neokomagataea_anthophila","Swingsia_samuiensis","Gluconobacter_wancherniae","Asaia_bogorensis","Asaia_krungthepensis",
+                               "Asaia_sp","Asaia_lannensis","Asaia_spathodeae","Asaia_siamensis","Asaia_platycodi","Asaia_astilbis","Swaminathania_salitolerans","Kozakia_baliensis","Neoasaia_chiangmaiensis","Acidomonas_methanolica","Tanticharoenia_sakaeratensis","Ameyamaea_chiangmaiensis","Acetobacter_oryzoeni","Acetobacter_pomorum",
+                               "Acetobacter_oryzifermentans","Acetobacter_ascendens","Acetobacter_pasteurianus","Acetobacter_vaccinii","Acetobacter_papayae","Acetobacter_suratthaniensis","Acetobacter_peroxydans","Acetobacter_garciniae","Acetobacter_okinawensis","Acetobacter_lambici","Acetobacter_lovaniensis","Acetobacter_fabarum","Acetobacter_syzygii",
+                               "Acetobacter_ghanensis","Acetobacter_cibinongensis","Acetobacter_orientalis","Acetobacter_thailandicus","Acetobacter_indonesiensis","Acetobacter_tropicalis","Acetobacter_senegalensis","Acetobacter_cerevisiae","Acetobacter_malorum","Acetobacter_orleanensis","Acetobacter_persici","Acetobacter_farinalis",
+                               "Acetobacter_musti","Acetobacter_fallax","Acetobacter_oeni","Acetobacter_conturbans","Acetobacter_aceti","Acetobacter_sicerae","Acetobacter_sp","Acetobacter_estunensis","Acetobacter_nitrogenifigens","Acetobacter_sacchari","Gluconacetobacter_azotocaptans","Gluconacetobacter_johannae","Gluconacetobacter_tumulisoli","Gluconacetobacter_diazotrophicus",
+                               "Nguyenibacter_sp","Nguyenibacter_vanlangensis","Gluconacetobacter_asukensis","Gluconacetobacter_tumulicola","Gluconacetobacter_aggeris","Gluconacetobacter_takamatsuzukensis","Gluconacetobacter_liquefaciens","Gluconacetobacter_dulcium","Gluconacetobacter_sacchari","Komagataeibacter_rhaeticus","Komagataeibacter_medellinensis","Komagataeibacter_swingsii",
+                               "Komagataeibacter_europaeus","Komagataeibacter_diospyri","Komagataeibacter_intermedius","Komagataeibacter_oboediens","Komagataeibacter_melomenusus","Komagataeibacter_xylinus","Komagataeibacter_sucrofermentans","Komagataeibacter_nataicola","Komagataeibacter_saccharivorans","Komagataeibacter_sp","Komagataeibacter_kakiaceti","Gluconacetobacter_entanii",
+                               "Novacetimonas_maltaceti","Novacetimonas_hansenii","Novacetimonas_pomaceti","Novacetimonas_cocois"))
 
-write.tree(subtree, "/Users/thibaultbret/AcetoGluconoNeoko-tree.treefile")
+write.tree(subtree, "/Users/thibaultbret/Bombe_vs_Commens-tree.treefile")
 ```
 
 In the anvio-dev Conda environment:
 ```bash
 anvi-compute-metabolic-enrichment -M kegg-metabolism_modules.txt \
-                                  -G groups-Aceto_vs_GluconoNeoko.txt \
-                                  -o functional-enrichment-Aceto_vs_GluconoNeoko.txt
+                                  -G groups-Bombe_vs_Commens.txt \
+                                  -o functional-enrichment-Bombe_vs_Commens.txt
 
 
-anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+anvi-interactive -d AAB-KEGG-data-Bombe_vs_Commens.txt -p AAB-Bombe_vs_Commens-KEGG-heatmap.db --manual
 
-anvi-import-state -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db -s state -n default
+anvi-import-state -p AAB-Bombe_vs_Commens-KEGG-heatmap.db -s state -n default
 
-anvi-import-items-order -i Aceto_vs_GluconoNeoko-tree.treefile \
-                        -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db \
+anvi-import-items-order -i Bombe_vs_Commens-tree.treefile \
+                        -p AAB-Bombe_vs_Commens-KEGG-heatmap.db \
                         --name taxonomy
 
-anvi-interactive -d AAB-KEGG-data-Aceto_vs_GluconoNeoko.txt -p AAB-Aceto_vs_GluconoNeoko-KEGG-heatmap.db --manual
+anvi-interactive -d AAB-KEGG-data-Bombe_vs_Commens.txt -p AAB-Bombe_vs_Commens-KEGG-heatmap.db --manual
 ```
 
 
