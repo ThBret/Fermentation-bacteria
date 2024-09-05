@@ -278,7 +278,7 @@ This script retrieves the percentage of completeness of all genomes from the "ba
 This directory is then exported to the server so that we can proceed with the construction of the first phylogeny.
 
 ## 7) Genome annotation using [Prokka](https://github.com/tseemann/prokka)
-After exporting the *Acetic_unique* directory to the **Mjolnir** server and while looking into programs that could be used to run a pangenomic analysis, we performed genome annotation using a command line tool called **Prokka**. Genome annotation was initially meant to generate files that could be used to run a pangenomic analysis with **Roary**. However, when we decided against using Roary (as it is meant to be used on sequences coming from a single species), the Prokka annotation still retained its significance by generating files containing data that would be used later in the pipeline to produce complementary plots.
+After exporting the *Acetic_unique* directory to the **Mjolnir** server and while looking into programmes that could be used to run a pangenomic analysis, we performed genome annotation using a command line tool called **Prokka**. Genome annotation was initially meant to generate files that could be used to run a pangenomic analysis with **Roary**. However, when we decided against using Roary (as it is meant to be used on sequences coming from a single species), the Prokka annotation still retained its significance by generating files containing data that would be used later in the pipeline to produce complementary plots.
 
 <details>
   <summary><b>prokka.sh</b> <i>(see code)</i></summary>
@@ -324,7 +324,7 @@ conda activate anvio-7.1
 anvi-gen-genomes-storage -e external-genomes.txt -o STORAGE-GENOMES.db 
 ```
 
-**3.** With the genomes storage ready, we can use the program **anvi-pan-genome** to run the actual pangenomic analysis.
+**3.** With the genomes storage ready, we can use the programme **anvi-pan-genome** to run the actual pangenomic analysis.
 ```bash
 anvi-pan-genome -g STORAGE-GENOMES.db -n PANGENOME
 ```
@@ -340,7 +340,7 @@ cd PANGENOME
 anvi-compute-gene-cluster-homogeneity -p PANGENOME-PAN.db -g STORAGE-GENOMES.db -o homogeneity_output.txt --store-in-db
 ```
 
-**6.** After the pangenomic analysis is done and the homogeneity values have been computed, we can use the program **anvi-display-pan** to display the results.
+**6.** After the pangenomic analysis is done and the homogeneity values have been computed, we can use the programme **anvi-display-pan** to display the results.
 ```bash
 anvi-display-pan -p PANGENOME-PAN.db -g STORAGE-GENOMES.db
 ```
@@ -606,7 +606,7 @@ for file in *.fna; do mv "$file" "${file%.fna}.fasta"; done
 
 ## Method 1 - Restricted metabolic analysis
 
-The aim here is to run the metabolic analysis with only a restricted set of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programs in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains our tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile"), our external-genomes files ("external-genomes.txt" and "external-genomes-noSRR.txt") as well as a folder named **ContigsDB** containing all the contigs databases we have been working with so far.
+The aim here is to run the metabolic analysis with only a restricted set of enzymes of interest in order to optimise the speed of the task (which won't be slowed down by factoring irrelevant enzymes). The disadvantage here is that we don't necessarily know which enzymes might be relevant so we might be missing out on important data, but it's also a way to experiment with the  metabolism suite of programmes in Anvi’o. All these commands can be run locally using the **anvio-dev** conda working environment. Our working directory is named **FinalTree** and contains our tree files ("sccg-tree-noSRR.treefile" and "sccg-tree.treefile"), our external-genomes files ("external-genomes.txt" and "external-genomes-noSRR.txt") as well as a folder named **ContigsDB** containing all the contigs databases we have been working with so far.
 
 ### 1) Setting up KEGG data
 The first step consists of defining the working directory and setting up a directory containing all the KEGG data.
@@ -997,7 +997,11 @@ anvi-interactive -d AAB-KEGG-data-Bombe_vs_Commens.txt -p AAB-Bombe_vs_Commens-K
 ```
 
 
-# April 2024 - dbCAN
+# April-May 2024 - Cazymes
+
+## Installing the dbCAN database
+
+The [CAZymes database](http://www.cazy.org) is a database of carbohydrate-active enzymes. Unlike the Anvi’o metabolism suite of programmes, which only includes small sugars, the CAZymes database incorporates many complex sugars, including notably relevant carbohydrates such as cellulose.
 
 Download dbcan from its [Github page](https://github.com/linnabrown/run_dbcan/releases/tag/4.1.4)
 
@@ -1029,9 +1033,34 @@ cd db \
 
 </details>
 
-Run dbcan:
+## Running the dbCAN function on AAB genomes
+
+**run_dbcan** is the standalone version of the dbCAN3 annotation tool for automated CAZyme annotation. This function combines multiple tools (HMMER, dbCAN_sub and DIAMOND) to annotate CAZyme families.
+
 ```bash
 cd dbcan-4.1.4
 
 for file in $(ls ../FinalGenomes/*.fa); do run_dbcan $file prok --out_dir "../dbcan-output" --tools hmmer diamond --out_pre "$(echo "$file" | sed 's/.*\/\([^\.]*\)\..*/\1/')." ; done
 ```
+
+## Installing the dbCAN database
+Once the CAZyme annotation is complete, we need to import the results to R. Here we will be reusing code from 
+
+
+## Family profiles
+
+## Substrate profiles
+substrate data and this is why they are not included in the heat map. This is the case for the following species:
+- Acetobacteraceae bacterium ESL0697
+- Aristophania vespae
+- Bombella apis
+- Bombella dulcis
+- Bombella pollinis
+- Bombella saccharophila
+- Bombella sp.
+- Parasaccharibacter apium
+
+[cazyme-substrate-profiles-v2.pdf](https://github.com/user-attachments/files/16895952/cazyme-substrate-profiles-v2.pdf)
+
+
+
