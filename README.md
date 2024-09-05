@@ -1044,7 +1044,9 @@ for file in $(ls ../FinalGenomes/*.fa); do run_dbcan $file prok --out_dir "../db
 ```
 
 ## Cleaning up the output
-Once the CAZyme annotation is complete, we need to import the results to R. Here we will be reusing code from 
+Once the CAZyme annotation is complete, we need to import the data in R for further analysis. Here we reuse some code from Rob Murphy's [pre-post fungus GitHub repository](https://github.com/Rob-murphys/pre-post_fungus).
+
+We first clean the data using the following script:
 
 <details>
   <summary><b>dbcan4 output family cleaner.R</b> <i>(see code)</i></summary>
@@ -1152,6 +1154,67 @@ get_substrates = function(df){
 
 ## Family profiles
 
+<details>
+  <summary><b>generate cazyme family profiles.R</b> <i>(see code)</i></summary>
+
+```R
+setwd("/Users/thibaultbret/dbcan-output")
+
+library(tibble)
+library(dplyr)
+library(ape)
+library(stringr)
+source("/Users/thibaultbret/Documents/Work/dbcan4 output family cleaner.R")
+
+#### Metagenome profiles ####
+#===========================#
+
+## Reading in the general data
+filelist = Sys.glob(paste(getwd(),"/*overview.txt", sep = ""))
+
+# Reading in all data files
+cazys = lapply(filelist, read.csv, header = TRUE, sep = "\t", stringsAsFactors=FALSE)
+
+## cleaning and recovering only those rows with families identified using the logic of a custom function ##
+family_profiles = NULL
+for (i in 1:length(filelist)){
+  current_profile = get_familys(cazys[[i]])
+  current_profile$bin = sub('.*output/(.*)\\.overview.*', '\\1', filelist[i])
+  family_profiles = rbind(family_profiles, current_profile)
+}
+
+write.csv(family_profiles, "~/family_profiles.csv")
+saveRDS(family_profiles, "~/family_profiles.RDS")
+#### Metagenome profiles end ####
+
+
+## Simple family stats ##
+#=======================#
+count_df = as.data.frame(matrix(ncol = 2))
+colnames(count_df) = c("family", "count")
+count_df = count_df[-1,]
+for(x in unique(family_profiles$family)){
+  df = family_profiles %>%
+    filter(family == x)
+  count_df$family
+  family = x
+  count = nrow(df)/nrow(family_profiles)*100
+  count_df = rbind(count_df, cbind(count, family))
+}
+
+## Summarized family stats ##
+
+fam_groups = c("GH", "CBM", "PL", "CE", "GT", "AA")
+
+for(x in fam_groups){
+  group_df = count_df %>%
+    filter(str_detect(family, x))
+  print(c(x,sum(as.numeric(group_df$count))))
+}
+```
+
+</details>
+
 [cazyme-family-profiles-v2.pdf](https://github.com/user-attachments/files/16896124/cazyme-family-profiles-v2.pdf)
 
 
@@ -1165,6 +1228,40 @@ substrate data and this is why they are not included in the heat map. This is th
 - Bombella saccharophila
 - Bombella sp.
 - Parasaccharibacter apium
+
+<details>
+  <summary><b>generate cazyme substrate profiles.R</b> <i>(see code)</i></summary>
+
+```R
+setwd("/Users/thibaultbret/dbcan-output")
+
+library(dplyr)
+source("/Users/thibaultbret/Documents/Work/dbcan4 output family cleaner.R")
+
+### Metagenome profiles ####
+#===========================#
+
+## Reading in the general data
+filelist = Sys.glob(paste(getwd(), "/*dbcan-sub.hmm.out", sep = ""))
+
+# Reading in all data files
+subs = lapply(filelist, read.table, header = TRUE, sep = "\t", stringsAsFactors=FALSE, row.names = NULL)
+
+substrate_profiles = NULL
+for (i in 1:length(filelist)){
+  current_profile = get_substrates(subs[[i]])
+  if (nrow(current_profile) == 0) {
+    cat("No data found for file:", filelist[i], "\n")
+    next
+  }
+  current_profile$bin = sub('.*output/(.*)\\.dbcan.*', '\\1', filelist[i])
+  substrate_profiles = rbind(substrate_profiles, current_profile)
+}
+
+write.csv(substrate_profiles, "/Users/thibaultbret/substrate_profiles.csv")
+saveRDS(substrate_profiles, "/Users/thibaultbret/substrate_profiles.RDS")
+```
+</details>
 
 [cazyme-substrate-profiles-v2.pdf](https://github.com/user-attachments/files/16895952/cazyme-substrate-profiles-v2.pdf)
 
