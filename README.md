@@ -997,9 +997,9 @@ anvi-interactive -d AAB-KEGG-data-Bombe_vs_Commens.txt -p AAB-Bombe_vs_Commens-K
 ```
 
 
-# April-May 2024 - Cazymes
+# April-May 2024 - CAZymes
 
-## Installing the dbCAN database
+## Setting up the CAZymes database
 
 The [CAZymes database](http://www.cazy.org) is a database of carbohydrate-active enzymes. Unlike the Anvi’o metabolism suite of programmes, which only includes small sugars, the CAZymes database incorporates many complex sugars, including notably relevant carbohydrates such as cellulose.
 
@@ -1033,7 +1033,7 @@ cd db \
 
 </details>
 
-## Running the dbCAN function on AAB genomes
+## Running the run_dbcan function on AAB genomes
 
 **run_dbcan** is the standalone version of the dbCAN3 annotation tool for automated CAZyme annotation. This function combines multiple tools (HMMER, dbCAN_sub and DIAMOND) to annotate CAZyme families.
 
@@ -1043,11 +1043,117 @@ cd dbcan-4.1.4
 for file in $(ls ../FinalGenomes/*.fa); do run_dbcan $file prok --out_dir "../dbcan-output" --tools hmmer diamond --out_pre "$(echo "$file" | sed 's/.*\/\([^\.]*\)\..*/\1/')." ; done
 ```
 
-## Installing the dbCAN database
+## Cleaning up the output
 Once the CAZyme annotation is complete, we need to import the results to R. Here we will be reusing code from 
 
+<details>
+  <summary><b>dbcan4 output family cleaner.R</b> <i>(see code)</i></summary>
+
+```R
+# Produces a comprehensive list of cazyme families by removing all tertiary data from the columns and getting an intersect from
+# both predictors
+
+
+get_familys = function(df){
+  
+  # df = df %>% 
+  #   filter(DIAMOND != "-" | HMMER != "-" | dbCAN_sub != "-") # removing rows where no family was identified by any tools
+  
+  df = df %>% 
+    filter(X.ofTools >= 2)
+  
+  df$family = NA # adding a family column
+  
+  df$contig = sapply(df$Gene.ID, function(x){
+    paste0(strsplit(as.character(x), "_", fixed = TRUE)[[1]][-4], collapse = "_")
+  })
+  
+  ## Take left most where multiple exist ##
+  df$DIAMOND = sapply(df$DIAMOND, function(x){
+    strsplit(as.character(x), "+", fixed = TRUE)[[1]][1] # Splitting the column at "+" and taking the first cazyme family (has the most proteins matched to this family)
+  })
+  
+  df$HMMER = sapply(df$HMMER, function(x){
+    strsplit(as.character(x), "+", fixed = TRUE)[[1]][1]
+  })
+  
+  df$dbCAN_sub = sapply(df$dbCAN_sub, function(x){
+    strsplit(as.character(x), "+", fixed = TRUE)[[1]][1]
+  })
+  
+  ## Remove tertiary info ##
+  
+  df$DIAMOND = sapply(df$DIAMOND, function(x){
+    strsplit(as.character(x), "_", fixed = TRUE)[[1]][1] # Splitting the column at "_" to remove the protein number and extra stuff dbSUB has (not sure what it is)
+  })
+  
+  df$HMMER = sapply(df$HMMER, function(x){
+    strsplit(as.character(x), "_", fixed = TRUE)[[1]][1]
+  })
+  
+  df$dbCAN_sub = sapply(df$dbCAN_sub, function(x){
+    strsplit(as.character(x), "_", fixed = TRUE)[[1]][1]
+  })
+
+  df$DIAMOND = sapply(df$DIAMOND, function(x){
+    strsplit(as.character(x), "(", fixed = TRUE)[[1]][1] # Splitting the column at "(+)" not sure what is in the brackets though
+  })
+  
+  df$HMMER = sapply(df$HMMER, function(x){
+    strsplit(as.character(x), "(", fixed = TRUE)[[1]][1]
+  })
+  
+  df$dbCAN_sub = sapply(df$dbCAN_sub, function(x){
+    strsplit(as.character(x), "(", fixed = TRUE)[[1]][1]
+  })
+  
+  ## Removing "-" and replacing with NA ##
+  df = df %>%
+    mutate(HMMER = na_if(HMMER, "-"),
+           DIAMOND = na_if(DIAMOND, "-"),
+           dbCAN_sub = na_if(dbCAN_sub, "-"))
+  
+  for(r in 1:nrow(df)){
+    votes = c(df[r,]$HMMER, df[r,]$DIAMOND, df[r,]$dbCAN_sub)
+    votes[! votes %in% c("GH0", "GT0", "PL0", "CE0", "AA0", "CBM0")] # ensuring we remove where it has been assigned to unclassified from the votes
+    df[r,]$family = names(sort(table(votes),decreasing=TRUE)[1])
+  }
+  
+  # df_coalescense = df %>% 
+  #   # taking the coalenscense of the two columns with DIAMOND being the "master" column
+  #   mutate(DIAMOND = na_if(DIAMOND, "-")) %>%
+  #   mutate(family = coalesce(DIAMOND, HMMER))
+  
+  return(df)
+  }
+  
+
+get_substrates = function(df){
+  
+  colnames(df) = c("dbCAN subfam",	"Subfam Composition",	"Subfam EC",	"Substrate",	"Profile Length",	"Gene ID",
+                   "Gene Length",	"E Value",	"Profile Start", "Profile End",	"Gene Start",	"Gene End",	"Coverage", "Coverage2")
+  df = df %>%
+    filter(Substrate != "-")
+  
+  df$Substrate = sapply(df$Substrate, function(x){
+    strsplit(as.character(x), ",", fixed = TRUE)[[1]][1]
+  })
+  
+  df$`Gene ID` = sapply(df$`Gene ID`, function(x){
+    paste0(strsplit(as.character(x), "_", fixed = TRUE)[[1]][-4], collapse = "_")
+  })
+  
+  return(df)
+}
+
+```
+
+</details>
 
 ## Family profiles
+
+[cazyme-family-profiles-v2.pdf](https://github.com/user-attachments/files/16896124/cazyme-family-profiles-v2.pdf)
+
 
 ## Substrate profiles
 substrate data and this is why they are not included in the heat map. This is the case for the following species:
