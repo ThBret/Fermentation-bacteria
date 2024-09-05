@@ -1005,7 +1005,7 @@ The [CAZymes database](http://www.cazy.org) is a database of carbohydrate-active
 
 Download dbcan from its [Github page](https://github.com/linnabrown/run_dbcan/releases/tag/4.1.4)
 
-Download databases:
+Set up databases:
 
 <details>
   <summary><b>dbcan_setup</b> <i>(see code)</i></summary>
