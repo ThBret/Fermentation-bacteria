@@ -1046,7 +1046,7 @@ for file in $(ls ../FinalGenomes/*.fa); do run_dbcan $file prok --out_dir "../db
 ## Cleaning up the output
 Once the CAZyme annotation is complete, we need to import the data in R for further analysis. Here we reuse some code from Rob Murphy's [pre-post fungus GitHub repository](https://github.com/Rob-murphys/pre-post_fungus).
 
-We first clean the data using the following script:
+The following script contains functions that will allow us to clean the data before setting up the family/substrate profiles:
 
 <details>
   <summary><b>dbcan4 output family cleaner.R</b> <i>(see code)</i></summary>
